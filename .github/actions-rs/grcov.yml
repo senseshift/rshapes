@@ -1,0 +1,2 @@
+output-type: lcov
+output-file: ./target/lcov.info
