@@ -3,6 +3,7 @@ name = "rshapes"
 version = "0.1.0"
 edition = "2021"
 autobenches = true
+authors = ["Leonid Meleshin <leon@senseshift.io>"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
