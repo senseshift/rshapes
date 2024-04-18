@@ -1,14 +1,14 @@
-mod for_rectangle;
 mod for_circle;
 mod for_ellipse;
-mod for_triangle;
+mod for_rectangle;
 mod for_shape_collection;
+mod for_triangle;
 
-pub use for_rectangle::*;
 pub use for_circle::*;
 pub use for_ellipse::*;
-pub use for_triangle::*;
+pub use for_rectangle::*;
 pub use for_shape_collection::*;
+pub use for_triangle::*;
 
 use crate::*;
 use num::Unsigned;
@@ -21,13 +21,13 @@ pub trait Within<T> {
 }
 
 impl<T, U> Within<&Point2<T>> for Shape<T, U>
-  where
-    T: Scalar,
-    U: Scalar + Unsigned,
-    Ellipse<T, U>: for<'a> Within<&'a Point2<T>, Result=bool>,
-    Circle<T, U>: for<'a> Within<&'a Point2<T>, Result=bool>,
-    Rectangle<T>: for<'a> Within<&'a Point2<T>, Result=bool>,
-    Triangle<T>: for<'a> Within<&'a Point2<T>, Result=bool>,
+where
+  T: Scalar,
+  U: Scalar + Unsigned,
+  Ellipse<T, U>: for<'a> Within<&'a Point2<T>, Result = bool>,
+  Circle<T, U>: for<'a> Within<&'a Point2<T>, Result = bool>,
+  Rectangle<T>: for<'a> Within<&'a Point2<T>, Result = bool>,
+  Triangle<T>: for<'a> Within<&'a Point2<T>, Result = bool>,
 {
   type Result = bool;
 

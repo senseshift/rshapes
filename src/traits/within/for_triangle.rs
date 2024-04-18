@@ -1,8 +1,7 @@
-use crate::*;
 use super::Within;
+use crate::*;
 
-impl Within<&Point2<u8>> for Triangle<u8>
-{
+impl Within<&Point2<u8>> for Triangle<u8> {
   type Result = bool;
 
   fn within(&self, other: &Point2<u8>) -> Self::Result {
@@ -33,8 +32,7 @@ impl Within<&Point2<u8>> for Triangle<u8>
     area_abc == area_pbc + area_apc + area_abp
   }
 }
-impl Within<Point2<u8>> for Triangle<u8>
-{
+impl Within<Point2<u8>> for Triangle<u8> {
   type Result = bool;
 
   fn within(&self, other: Point2<u8>) -> Self::Result {

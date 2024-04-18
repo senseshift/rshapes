@@ -1,24 +1,24 @@
+use nalgebra::{Point2, Scalar, Vector2};
+use num::Unsigned;
 use std::collections::HashSet;
 use std::fmt::{Debug, Formatter};
 use std::hash::{Hash, Hasher};
 use std::ops::Div;
-use nalgebra::{Point2, Scalar, Vector2};
-use num::Unsigned;
 
-use super::{Shape, Rectangle};
+use super::{Rectangle, Shape};
 
 pub struct ShapeCollection<T, U>
-  where
-    T: Scalar,
-    U: Scalar + Unsigned,
+where
+  T: Scalar,
+  U: Scalar + Unsigned,
 {
   pub shapes: Vec<Shape<T, U>>,
 }
 
 impl<T, U> Default for ShapeCollection<T, U>
-  where
-    T: Scalar,
-    U: Scalar + Unsigned,
+where
+  T: Scalar,
+  U: Scalar + Unsigned,
 {
   fn default() -> Self {
     Self {
@@ -28,10 +28,10 @@ impl<T, U> Default for ShapeCollection<T, U>
 }
 
 impl<T, U> Debug for ShapeCollection<T, U>
-  where
-    T: Scalar,
-    U: Scalar + Unsigned,
-    Shape<T, U>: Debug
+where
+  T: Scalar,
+  U: Scalar + Unsigned,
+  Shape<T, U>: Debug,
 {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
     f.debug_struct("ShapeCollection")
@@ -41,9 +41,9 @@ impl<T, U> Debug for ShapeCollection<T, U>
 }
 
 impl<T, U> ShapeCollection<T, U>
-  where
-    T: Scalar,
-    U: Scalar + Unsigned,
+where
+  T: Scalar,
+  U: Scalar + Unsigned,
 {
   pub fn new(geometry: Vec<Shape<T, U>>) -> Self {
     Self { shapes: geometry }
@@ -51,10 +51,10 @@ impl<T, U> ShapeCollection<T, U>
 }
 
 impl<T, U> Hash for ShapeCollection<T, U>
-  where
-    T: Scalar + Hash,
-    U: Scalar + Unsigned + Hash,
-    Shape<T, U>: Hash
+where
+  T: Scalar + Hash,
+  U: Scalar + Unsigned + Hash,
+  Shape<T, U>: Hash,
 {
   fn hash<H: Hasher>(&self, state: &mut H) {
     self.shapes.hash(state);
@@ -62,10 +62,10 @@ impl<T, U> Hash for ShapeCollection<T, U>
 }
 
 impl<T, U> Clone for ShapeCollection<T, U>
-  where
-    T: Scalar + Clone,
-    U: Scalar + Unsigned + Clone,
-    Shape<T, U>: Clone
+where
+  T: Scalar + Clone,
+  U: Scalar + Unsigned + Clone,
+  Shape<T, U>: Clone,
 {
   fn clone(&self) -> Self {
     Self {
@@ -75,10 +75,10 @@ impl<T, U> Clone for ShapeCollection<T, U>
 }
 
 impl<T, U> PartialEq for ShapeCollection<T, U>
-  where
-    T: Scalar + PartialEq,
-    U: Scalar + Unsigned + PartialEq,
-    Shape<T, U>: PartialEq
+where
+  T: Scalar + PartialEq,
+  U: Scalar + Unsigned + PartialEq,
+  Shape<T, U>: PartialEq,
 {
   fn eq(&self, other: &Self) -> bool {
     self.shapes == other.shapes
@@ -86,14 +86,14 @@ impl<T, U> PartialEq for ShapeCollection<T, U>
 }
 
 impl<T, U> Eq for ShapeCollection<T, U>
-  where
-    T: Scalar + Eq,
-    U: Scalar + Unsigned + Eq,
-    Shape<T, U>: Eq
-{}
-
-impl ShapeCollection<u8, u8>
+where
+  T: Scalar + Eq,
+  U: Scalar + Unsigned + Eq,
+  Shape<T, U>: Eq,
 {
+}
+
+impl ShapeCollection<u8, u8> {
   pub fn center(&self) -> Point2<u8> {
     let mut center = Vector2::new(0., 0.);
     for geometry in &self.shapes {

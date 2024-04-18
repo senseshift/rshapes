@@ -1,9 +1,9 @@
-use crate::*;
 use super::Within;
+use crate::*;
 
 impl<T> Within<&Point2<T>> for Rectangle<T>
-  where
-    T: Scalar + PartialOrd,
+where
+  T: Scalar + PartialOrd,
 {
   type Result = bool;
 
@@ -19,8 +19,8 @@ impl<T> Within<&Point2<T>> for Rectangle<T>
   }
 }
 impl<T> Within<Point2<T>> for Rectangle<T>
-  where
-    T: Scalar + PartialOrd,
+where
+  T: Scalar + PartialOrd,
 {
   type Result = bool;
 
@@ -34,9 +34,9 @@ mod tests {
   use super::*;
   use crate::*;
 
+  use crate::testing::*;
   use test_case::test_case;
   use test_strategy::proptest;
-  use crate::testing::*;
 
   #[test_case(Rectangle::new(Point2::from([0, 0]), Point2::from([10, 10])), Point2::from([0, 0]) => true; "top-left")]
   #[test_case(Rectangle::new(Point2::from([0, 0]), Point2::from([10, 10])), Point2::from([10, 10]) => true; "bottom-right")]

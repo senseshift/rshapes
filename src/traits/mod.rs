@@ -1,5 +1,5 @@
-mod within;
 mod distance;
+mod within;
 
-pub use within::*;
 pub use distance::*;
+pub use within::*;

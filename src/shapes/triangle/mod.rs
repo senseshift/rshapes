@@ -1,18 +1,21 @@
-use std::fmt::Debug;
-use std::hash::Hash;
 use derivative::Derivative;
 use num::{Unsigned, Zero};
+use std::fmt::Debug;
+use std::hash::Hash;
 
 use crate::*;
 
-#[cfg_attr(feature = "serde-serialize", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+  feature = "serde-serialize",
+  derive(serde::Serialize, serde::Deserialize)
+)]
 #[derive(Derivative)]
 #[derivative(Debug, Clone, Copy, Hash, PartialEq, Eq)]
 pub struct Triangle<T: Scalar>(pub Point2<T>, pub Point2<T>, pub Point2<T>);
 
 impl<T> Triangle<T>
-  where
-    T: Scalar,
+where
+  T: Scalar,
 {
   #[inline]
   pub fn new(a: Point2<T>, b: Point2<T>, c: Point2<T>) -> Self {
@@ -55,11 +58,11 @@ impl Triangle<u8> {
   pub fn points_inside(&self) -> Vec<Point2<u8>> {
     use crate::traits::Within;
 
-    return self.bbox().points_inside()
+    return self
+      .bbox()
+      .points_inside()
       .into_iter()
-      .filter(|point| {
-        self.within(*point)
-      })
+      .filter(|point| self.within(*point))
       .collect();
   }
 }

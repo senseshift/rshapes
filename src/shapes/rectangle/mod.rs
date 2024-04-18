@@ -1,18 +1,21 @@
-use std::fmt::Debug;
-use std::hash::Hash;
 use derivative::Derivative;
 use num::{Num, Zero};
+use std::fmt::Debug;
+use std::hash::Hash;
 
 use crate::*;
 
-#[cfg_attr(feature = "serde-serialize", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+  feature = "serde-serialize",
+  derive(serde::Serialize, serde::Deserialize)
+)]
 #[derive(Derivative)]
 #[derivative(Debug, Clone, Copy, Hash, PartialEq, Eq)]
 pub struct Rectangle<T: Scalar>(Point2<T>, Point2<T>);
 
 impl<T> Rectangle<T>
-  where
-    T: Scalar,
+where
+  T: Scalar,
 {
   #[inline]
   pub fn new_unchecked(min: Point2<T>, max: Point2<T>) -> Self {
@@ -31,8 +34,8 @@ impl<T> Rectangle<T>
 }
 
 impl<T> Rectangle<T>
-  where
-    T: Scalar + PartialOrd + Copy,
+where
+  T: Scalar + PartialOrd + Copy,
 {
   pub fn new(a: Point2<T>, b: Point2<T>) -> Self {
     let x_max = if a.x > b.x { a.x } else { b.x };
@@ -40,16 +43,13 @@ impl<T> Rectangle<T>
     let y_max = if a.y > b.y { a.y } else { b.y };
     let y_min = if a.y < b.y { a.y } else { b.y };
 
-    Self(
-      Point2::new(x_min, y_min),
-      Point2::new(x_max, y_max),
-    )
+    Self(Point2::new(x_min, y_min), Point2::new(x_max, y_max))
   }
 }
 
 impl<T> Rectangle<T>
-  where
-    T: Scalar + Num,
+where
+  T: Scalar + Num,
 {
   /// Returns the width of the rectangle.
   ///
@@ -97,10 +97,7 @@ impl Rectangle<u8> {
     let min = self.min().map(|x| x as u16);
     let max = self.max().map(|x| x as u16);
 
-    Point2::new(
-      ((min.x + max.x) / 2) as u8,
-      ((min.y + max.y) / 2) as u8,
-    )
+    Point2::new(((min.x + max.x) / 2) as u8, ((min.y + max.y) / 2) as u8)
   }
 
   /// Returns a vector of all points inside the rectangle.
@@ -149,13 +146,18 @@ mod tests {
 
   #[test]
   fn points_inside_are_within() {
-    use crate::{Point2, traits::Within};
+    use crate::{traits::Within, Point2};
 
     let rectangle = Rectangle::new(Point2::new(0, 0), Point2::new(2, 2));
     let points = rectangle.points_inside();
 
     for point in points {
-      assert!(rectangle.within(&point), "point {:?} is not within rectangle {:?}", point, rectangle);
+      assert!(
+        rectangle.within(&point),
+        "point {:?} is not within rectangle {:?}",
+        point,
+        rectangle
+      );
     }
   }
 }

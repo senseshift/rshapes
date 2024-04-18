@@ -1,10 +1,12 @@
 use nalgebra::{Point2, Scalar};
 use num::traits::{Num, NumOps, Unsigned};
 
-use crate::{Circle, Ellipse, Line, Rectangle, Triangle, ShapeCollection, Shape, traits::{Distance, distance}};
+use crate::{
+  traits::{distance, Distance},
+  Circle, Ellipse, Line, Rectangle, Shape, ShapeCollection, Triangle,
+};
 
-impl Distance<&Circle<u8, u8>> for Circle<u8, u8>
-{
+impl Distance<&Circle<u8, u8>> for Circle<u8, u8> {
   type Result = f64;
 
   fn distance(&self, other: &Circle<u8, u8>) -> Self::Result {
@@ -19,8 +21,7 @@ impl Distance<&Circle<u8, u8>> for Circle<u8, u8>
   }
 }
 
-impl Distance<Circle<u8, u8>> for Circle<u8, u8>
-{
+impl Distance<Circle<u8, u8>> for Circle<u8, u8> {
   type Result = f64;
 
   fn distance(&self, other: Circle<u8, u8>) -> Self::Result {
@@ -33,9 +34,9 @@ mod tests {
   use super::*;
   use crate::*;
 
+  use crate::testing::PointView;
   use test_case::test_case;
   use test_strategy::proptest;
-  use crate::testing::PointView;
 
   #[proptest]
   fn circle_distance_u8_fuzz(circle1: Circle<u8, u8>, circle2: Circle<u8, u8>) {

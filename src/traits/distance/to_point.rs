@@ -1,10 +1,12 @@
+use nalgebra::{Point2, Scalar};
+use num::traits::{Num, NumOps, Unsigned};
+use ordered_float::OrderedFloat;
 use std::ops::{Mul, Sub};
 use std::process::Output;
-use nalgebra::{Point2, Scalar};
-use num::traits::{ Num, NumOps, Unsigned };
-use ordered_float::OrderedFloat;
 
-use crate::{Circle, Ellipse, Line, Rectangle, Triangle, ShapeCollection, Shape, traits::Distance, FloatMath};
+use crate::{
+  traits::Distance, Circle, Ellipse, FloatMath, Line, Rectangle, Shape, ShapeCollection, Triangle,
+};
 
 /// Calculate the squared distance between two points.
 ///
@@ -19,8 +21,8 @@ use crate::{Circle, Ellipse, Line, Rectangle, Triangle, ShapeCollection, Shape, 
 /// assert_eq!(distance_squared(&a, &b), distance_squared(&b, &a));
 /// ```
 pub fn distance_squared<T>(a: &Point2<T>, b: &Point2<T>) -> f64
-  where
-    T: FloatMath,
+where
+  T: FloatMath,
 {
   let x_max = if a.x > b.x { a.x } else { b.x };
   let x_min = if a.x < b.x { a.x } else { b.x };
@@ -50,16 +52,16 @@ pub fn distance_squared<T>(a: &Point2<T>, b: &Point2<T>) -> f64
 /// ```
 #[inline]
 pub fn distance<T>(a: &Point2<T>, b: &Point2<T>) -> f64
-  where
-    T: FloatMath,
+where
+  T: FloatMath,
 {
   use num::integer::Roots;
   distance_squared(a, b).sqrt()
 }
 
 impl<T> Distance<&Point2<T>> for Point2<T>
-  where
-    T: FloatMath,
+where
+  T: FloatMath,
 {
   type Result = f64;
 
@@ -80,8 +82,8 @@ impl<T> Distance<&Point2<T>> for Point2<T>
   }
 }
 impl<T> Distance<Point2<T>> for Point2<T>
-  where
-    T: FloatMath,
+where
+  T: FloatMath,
 {
   type Result = f64;
 
@@ -126,18 +128,15 @@ impl Distance<&Point2<u8>> for Ellipse<u8, u8> {
   type Result = f64;
 
   fn distance(&self, point: &Point2<u8>) -> f64 {
-    use ordered_float::OrderedFloat;
     use crate::traits::Within;
+    use ordered_float::OrderedFloat;
 
     if self.within(point) == true {
       return 0.0;
     }
 
     let point_on_ellipse = self.point_intersection(point, 10);
-    distance(
-      &point_on_ellipse,
-      &point.map(|c| c as f64),
-    )
+    distance(&point_on_ellipse, &point.map(|c| c as f64))
   }
 }
 impl Distance<Point2<u8>> for Ellipse<u8, u8> {
@@ -223,10 +222,22 @@ impl Distance<&Point2<u8>> for Rectangle<u8> {
       return 0.0;
     }
 
-    let top = Line::new(self.min().clone(), Point2::new(self.max().x.clone(), self.min().y.clone()));
-    let right = Line::new(Point2::new(self.max().x.clone(), self.min().y.clone()), self.max().clone());
-    let bottom = Line::new(self.max().clone(), Point2::new(self.min().x.clone(), self.max().y.clone()));
-    let left = Line::new(Point2::new(self.min().x.clone(), self.max().y.clone()), self.min().clone());
+    let top = Line::new(
+      self.min().clone(),
+      Point2::new(self.max().x.clone(), self.min().y.clone()),
+    );
+    let right = Line::new(
+      Point2::new(self.max().x.clone(), self.min().y.clone()),
+      self.max().clone(),
+    );
+    let bottom = Line::new(
+      self.max().clone(),
+      Point2::new(self.min().x.clone(), self.max().y.clone()),
+    );
+    let left = Line::new(
+      Point2::new(self.min().x.clone(), self.max().y.clone()),
+      self.min().clone(),
+    );
 
     let distances = [
       top.distance(point),
@@ -235,10 +246,7 @@ impl Distance<&Point2<u8>> for Rectangle<u8> {
       left.distance(point),
     ];
 
-    distances
-      .iter()
-      .copied()
-      .fold(f64::MAX, f64::min)
+    distances.iter().copied().fold(f64::MAX, f64::min)
   }
 }
 impl Distance<Point2<u8>> for Rectangle<u8> {
@@ -277,16 +285,9 @@ impl Distance<&Point2<u8>> for Triangle<u8> {
     let b = Line::new(self.1.clone(), self.2.clone());
     let c = Line::new(self.2.clone(), self.0.clone());
 
-    let distances = [
-      a.distance(point),
-      b.distance(point),
-      c.distance(point),
-    ];
+    let distances = [a.distance(point), b.distance(point), c.distance(point)];
 
-    distances
-      .iter()
-      .copied()
-      .fold(f64::MAX, f64::min)
+    distances.iter().copied().fold(f64::MAX, f64::min)
   }
 }
 impl Distance<Point2<u8>> for Triangle<u8> {
@@ -298,10 +299,10 @@ impl Distance<Point2<u8>> for Triangle<u8> {
 }
 
 impl<T, R> Distance<&Point2<T>> for ShapeCollection<T, R>
-  where
-    T: Scalar,
-    R: Scalar + Unsigned,
-    Shape<T, R>: for<'a> Distance<&'a Point2<T>, Result = f64>,
+where
+  T: Scalar,
+  R: Scalar + Unsigned,
+  Shape<T, R>: for<'a> Distance<&'a Point2<T>, Result = f64>,
 {
   type Result = f64;
 
@@ -315,18 +316,15 @@ impl<T, R> Distance<&Point2<T>> for ShapeCollection<T, R>
       distances.push(distance);
     }
 
-    distances
-      .iter()
-      .copied()
-      .fold(f64::MAX, f64::min)
+    distances.iter().copied().fold(f64::MAX, f64::min)
   }
 }
 
 impl<T, R> Distance<Point2<T>> for ShapeCollection<T, R>
-  where
-    T: Scalar,
-    R: Scalar + Unsigned,
-    Shape<T, R>: for<'a> Distance<&'a Point2<T>, Result = f64>,
+where
+  T: Scalar,
+  R: Scalar + Unsigned,
+  Shape<T, R>: for<'a> Distance<&'a Point2<T>, Result = f64>,
 {
   type Result = f64;
 
@@ -336,13 +334,13 @@ impl<T, R> Distance<Point2<T>> for ShapeCollection<T, R>
 }
 
 impl<T, R> Distance<&Point2<T>> for Shape<T, R>
-  where
-    T: Scalar,
-    R: Scalar + Unsigned,
-    Ellipse<T, R>: for<'a> Distance<&'a Point2<T>, Result = f64>,
-    Circle<T, R>: for<'a> Distance<&'a Point2<T>, Result = f64>,
-    Rectangle<T>: for<'a> Distance<&'a Point2<T>, Result = f64>,
-    Triangle<T>: for<'a> Distance<&'a Point2<T>, Result = f64>,
+where
+  T: Scalar,
+  R: Scalar + Unsigned,
+  Ellipse<T, R>: for<'a> Distance<&'a Point2<T>, Result = f64>,
+  Circle<T, R>: for<'a> Distance<&'a Point2<T>, Result = f64>,
+  Rectangle<T>: for<'a> Distance<&'a Point2<T>, Result = f64>,
+  Triangle<T>: for<'a> Distance<&'a Point2<T>, Result = f64>,
 {
   type Result = f64;
 
@@ -357,14 +355,14 @@ impl<T, R> Distance<&Point2<T>> for Shape<T, R>
   }
 }
 impl<T, R> Distance<Point2<T>> for Shape<T, R>
-  where
-    T: Scalar,
-    R: Scalar + Unsigned,
-    Ellipse<T, R>: for<'a> Distance<&'a Point2<T>, Result = f64>,
-    Circle<T, R>: for<'a> Distance<&'a Point2<T>, Result = f64>,
-    Rectangle<T>: for<'a> Distance<&'a Point2<T>, Result = f64>,
-    Triangle<T>: for<'a> Distance<&'a Point2<T>, Result = f64>,
-    ShapeCollection<T, R>: for<'a> Distance<&'a Point2<T>, Result = f64>,
+where
+  T: Scalar,
+  R: Scalar + Unsigned,
+  Ellipse<T, R>: for<'a> Distance<&'a Point2<T>, Result = f64>,
+  Circle<T, R>: for<'a> Distance<&'a Point2<T>, Result = f64>,
+  Rectangle<T>: for<'a> Distance<&'a Point2<T>, Result = f64>,
+  Triangle<T>: for<'a> Distance<&'a Point2<T>, Result = f64>,
+  ShapeCollection<T, R>: for<'a> Distance<&'a Point2<T>, Result = f64>,
 {
   type Result = f64;
 
@@ -378,9 +376,9 @@ mod tests {
   use super::*;
   use crate::*;
 
+  use crate::testing::PointView;
   use test_case::test_case;
   use test_strategy::proptest;
-  use crate::testing::PointView;
 
   #[test_case(Point2::new(0, 0), Point2::new(3, 4) => 25)]
   #[test_case(Point2::new(0, 0), Point2::new(0, 0) => 0)]

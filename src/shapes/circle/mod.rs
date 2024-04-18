@@ -15,9 +15,9 @@ pub struct Circle<T: Scalar, R: Scalar + Unsigned> {
 }
 
 impl<T, R> Circle<T, R>
-  where
-    T: Scalar,
-    R: Scalar + Unsigned,
+where
+  T: Scalar,
+  R: Scalar + Unsigned,
 {
   #[inline]
   pub fn new(center: Point2<T>, radius: R) -> Self {
@@ -35,26 +35,26 @@ impl Circle<u8, u8> {
 
     Rectangle::new(
       min.map(|x| x.clamp(0, u8::MAX as i16) as u8),
-      max.map(|x| x.clamp(0, u8::MAX as i16) as u8)
+      max.map(|x| x.clamp(0, u8::MAX as i16) as u8),
     )
   }
 
   pub fn points_inside(&self) -> Vec<Point2<u8>> {
     use crate::traits::Within;
 
-    return self.bbox().points_inside()
+    return self
+      .bbox()
+      .points_inside()
       .into_iter()
-      .filter(|point| {
-        self.within(point)
-      })
+      .filter(|point| self.within(point))
       .collect();
   }
 }
 
 #[cfg(test)]
 mod tests {
-  use crate::assert_vec_eq;
   use super::*;
+  use crate::assert_vec_eq;
 
   use test_case::test_case;
   use test_strategy::proptest;

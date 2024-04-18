@@ -1,12 +1,15 @@
-use std::fmt::Debug;
-use std::hash::Hash;
 use derivative::Derivative;
 use getset::Getters;
 use num::{Unsigned, Zero};
+use std::fmt::Debug;
+use std::hash::Hash;
 
 use crate::*;
 
-#[cfg_attr(feature = "serde-serialize", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+  feature = "serde-serialize",
+  derive(serde::Serialize, serde::Deserialize)
+)]
 #[derive(Getters, Derivative)]
 #[derivative(Debug, Clone, Copy, Hash, PartialEq, Eq)]
 pub struct Ellipse<T: Scalar, R: Scalar> {
@@ -17,9 +20,9 @@ pub struct Ellipse<T: Scalar, R: Scalar> {
 }
 
 impl<T, R> Ellipse<T, R>
-  where
-    T: Scalar,
-    R: Scalar,
+where
+  T: Scalar,
+  R: Scalar,
 {
   #[inline]
   pub fn new(center: Point2<T>, radius: (R, R)) -> Self {
@@ -58,7 +61,9 @@ impl Ellipse<u8, u8> {
       let cos_phi = phi.cos();
 
       let f = (a * a - b * b) * cos_phi * sin_phi - dx * a * sin_phi + dy * b * cos_phi;
-      let f1 = (a * a - b * b) * (cos_phi * cos_phi - sin_phi * sin_phi) - p1.x * a * cos_phi - p1.y * b * sin_phi;
+      let f1 = (a * a - b * b) * (cos_phi * cos_phi - sin_phi * sin_phi)
+        - p1.x * a * cos_phi
+        - p1.y * b * sin_phi;
 
       let delta = f / f1;
       phi = phi - delta;
@@ -81,18 +86,18 @@ impl Ellipse<u8, u8> {
 
     Rectangle::new(
       Point2::new(x, y).map(|c| c as u8),
-      Point2::new(x + width, y + height)
-        .map(|c| c as u8))
+      Point2::new(x + width, y + height).map(|c| c as u8),
+    )
   }
 
   pub fn points_inside(&self) -> Vec<Point2<u8>> {
     use crate::traits::Within;
 
-    return self.bbox().points_inside()
+    return self
+      .bbox()
+      .points_inside()
       .into_iter()
-      .filter(|point| {
-        self.within(*point)
-      })
+      .filter(|point| self.within(*point))
       .collect();
   }
 }

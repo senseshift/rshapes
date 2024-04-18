@@ -1,8 +1,7 @@
-use crate::*;
 use super::Within;
+use crate::*;
 
-impl Within<&Point2<u8>> for Circle<u8, u8>
-{
+impl Within<&Point2<u8>> for Circle<u8, u8> {
   type Result = bool;
 
   fn within(&self, other: &Point2<u8>) -> Self::Result {
@@ -27,9 +26,9 @@ mod tests {
   use super::*;
   use crate::*;
 
+  use crate::testing::PointView;
   use test_case::test_case;
   use test_strategy::proptest;
-  use crate::testing::PointView;
 
   #[test_case(Circle::new(Point2::from([0, 0]), 10), Point2::from([0, 0]) => true; "center")]
   #[test_case(Circle::new(Point2::from([0, 0]), 10), Point2::from([1, 0]) => true; "inside right")]

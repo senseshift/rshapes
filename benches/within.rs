@@ -1,6 +1,6 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 
-use rshapes::{traits::Within, Point2, Ellipse};
+use rshapes::{traits::Within, Ellipse, Point2};
 
 fn criterion_benchmark(c: &mut Criterion) {
   c.bench_function("point within ellipse", |b| {

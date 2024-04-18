@@ -1,13 +1,13 @@
-use crate::*;
 use super::Within;
+use crate::*;
 
 use num::Unsigned;
 
 impl<T, U> Within<&Point2<T>> for ShapeCollection<T, U>
-  where
-    T: Scalar,
-    U: Scalar + Unsigned,
-    Shape<T, U>: for<'a> Within<&'a Point2<T>, Result = bool>,
+where
+  T: Scalar,
+  U: Scalar + Unsigned,
+  Shape<T, U>: for<'a> Within<&'a Point2<T>, Result = bool>,
 {
   type Result = bool;
 
@@ -21,10 +21,10 @@ impl<T, U> Within<&Point2<T>> for ShapeCollection<T, U>
   }
 }
 impl<T, U> Within<Point2<T>> for ShapeCollection<T, U>
-  where
-    T: Scalar,
-    U: Scalar + Unsigned,
-    Shape<T, U>: for<'a> Within<&'a Point2<T>, Result = bool>,
+where
+  T: Scalar,
+  U: Scalar + Unsigned,
+  Shape<T, U>: for<'a> Within<&'a Point2<T>, Result = bool>,
 {
   type Result = bool;
 

@@ -1,8 +1,8 @@
-use std::fmt::Debug;
-use num::Unsigned;
 use crate::*;
-use nalgebra::*;
 use array_init::{array_init, try_array_init};
+use nalgebra::*;
+use num::Unsigned;
+use std::fmt::Debug;
 
 use proptest::arbitrary::*;
 use proptest::collection::*;
@@ -14,7 +14,12 @@ use proptest::test_runner::*;
 macro_rules! assert_vec_eq {
   ($left:expr, $right:expr) => {
     $left.iter().for_each(|a| {
-      assert!($right.contains(a), "Expected {:?} to contain {:?}", $right, a);
+      assert!(
+        $right.contains(a),
+        "Expected {:?} to contain {:?}",
+        $right,
+        a
+      );
     });
     $right.iter().for_each(|a| {
       assert!($left.contains(a), "Expected {:?} to contain {:?}", $left, a);
@@ -31,17 +36,17 @@ type FilterMapped<I, O> = FilterMap<StrategyFor<I>, fn(_: I) -> Option<O>>;
 
 #[derive(Clone)]
 pub struct ShrinkablePoint<T, const N: usize>
-  where
-    T: Scalar + Debug
+where
+  T: Scalar + Debug,
 {
   point: Point<T, N>,
   shrink: usize,
   prev_shrink: Option<usize>,
 }
 impl<T, const N: usize> ValueTree for ShrinkablePoint<T, N>
-  where
-    T: Scalar + Debug + ValueTree,
-    <T as ValueTree>::Value: Clone + PartialEq
+where
+  T: Scalar + Debug + ValueTree,
+  <T as ValueTree>::Value: Clone + PartialEq,
 {
   type Value = Point<<T as ValueTree>::Value, N>;
 
@@ -83,20 +88,19 @@ pub struct PointView<T: Scalar, const N: usize>(pub Point<T, N>);
 pub type PointView2<T> = PointView<T, 2>;
 
 impl<T, const N: usize> Debug for PointView<T, N>
-  where T: Scalar + Debug + Clone + PartialEq
+where
+  T: Scalar + Debug + Clone + PartialEq,
 {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    f.debug_tuple("PointView")
-      .field(&self.0)
-      .finish()
+    f.debug_tuple("PointView").field(&self.0).finish()
   }
 }
 
 impl<T, const N: usize> Strategy for PointView<T, N>
-  where
-    T: Scalar + Clone + Debug + Strategy,
-    <T as Strategy>::Tree: Clone + Debug + PartialEq,
-    <T as Strategy>::Value: Clone + PartialEq,
+where
+  T: Scalar + Clone + Debug + Strategy,
+  <T as Strategy>::Tree: Clone + Debug + PartialEq,
+  <T as Strategy>::Value: Clone + PartialEq,
 {
   type Tree = ShrinkablePoint<T::Tree, N>;
   type Value = Point<<T as Strategy>::Value, N>;
@@ -115,7 +119,8 @@ impl<T, const N: usize> Strategy for PointView<T, N>
 // Arbitrary Point
 
 impl<T, const N: usize> Into<Point<T, N>> for PointView<T, N>
-  where T: Scalar + Debug + Clone + PartialEq
+where
+  T: Scalar + Debug + Clone + PartialEq,
 {
   fn into(self) -> Point<T, N> {
     self.0
@@ -123,7 +128,8 @@ impl<T, const N: usize> Into<Point<T, N>> for PointView<T, N>
 }
 
 impl<T, const N: usize> From<[T; N]> for PointView<T, N>
-  where T: Scalar + Debug + Clone + PartialEq
+where
+  T: Scalar + Debug + Clone + PartialEq,
 {
   fn from(array: [T; N]) -> Self {
     Self(Point::from(array))
@@ -131,15 +137,14 @@ impl<T, const N: usize> From<[T; N]> for PointView<T, N>
 }
 
 impl<T> Arbitrary for PointView<T, 2>
-  where
-    T::Strategy: Clone,
-    T::Parameters: Clone,
-    T: Arbitrary + Scalar + Clone,
+where
+  T::Strategy: Clone,
+  T::Parameters: Clone,
+  T: Arbitrary + Scalar + Clone,
 {
   type Parameters = T::Parameters;
   fn arbitrary_with(params: Self::Parameters) -> Self::Strategy {
-    vec(any_with::<T>(params), 2)
-      .prop_map(|vec: Vec<T>| [vec[0].clone(), vec[1].clone()].into())
+    vec(any_with::<T>(params), 2).prop_map(|vec: Vec<T>| [vec[0].clone(), vec[1].clone()].into())
   }
   type Strategy = proptest::arbitrary::Mapped<Vec<T>, PointView<T, 2>>;
 }
@@ -148,18 +153,22 @@ impl<T> Arbitrary for PointView<T, 2>
 // Arbitrary Circle
 
 impl<T, R> Arbitrary for Circle<T, R>
-  where
-    T::Strategy: Clone,
-    T::Parameters: Clone,
-    T: Arbitrary + Scalar + Clone,
-    R::Strategy: Clone,
-    R::Parameters: Clone,
-    R: Arbitrary + Scalar + Unsigned + Clone,
+where
+  T::Strategy: Clone,
+  T::Parameters: Clone,
+  T: Arbitrary + Scalar + Clone,
+  R::Strategy: Clone,
+  R::Parameters: Clone,
+  R: Arbitrary + Scalar + Unsigned + Clone,
 {
   type Parameters = <(T, R) as Arbitrary>::Parameters;
   fn arbitrary_with(params: Self::Parameters) -> Self::Strategy {
-    any_with::<(PointView<T, 2>, R)>((params.0.clone(), params.1.clone()))
-      .prop_map(|(center, radius)| Circle { center: center.into(), radius })
+    any_with::<(PointView<T, 2>, R)>((params.0.clone(), params.1.clone())).prop_map(
+      |(center, radius)| Circle {
+        center: center.into(),
+        radius,
+      },
+    )
   }
   type Strategy = Mapped<(PointView<T, 2>, R), Circle<T, R>>;
 }
@@ -168,18 +177,21 @@ impl<T, R> Arbitrary for Circle<T, R>
 // Arbitrary Ellipse
 
 impl<T, R> Arbitrary for Ellipse<T, R>
-  where
-    T::Strategy: Clone,
-    T::Parameters: Clone,
-    T: Arbitrary + Scalar + Clone,
-    R::Strategy: Clone,
-    R::Parameters: Clone,
-    R: Arbitrary + Scalar + Unsigned + Clone,
+where
+  T::Strategy: Clone,
+  T::Parameters: Clone,
+  T: Arbitrary + Scalar + Clone,
+  R::Strategy: Clone,
+  R::Parameters: Clone,
+  R: Arbitrary + Scalar + Unsigned + Clone,
 {
   type Parameters = <(T, R) as Arbitrary>::Parameters;
   fn arbitrary_with(params: Self::Parameters) -> Self::Strategy {
     any_with::<(PointView<T, 2>, (R, R))>((params.0.clone(), (params.1.clone(), params.1.clone())))
-      .prop_map(|(center, radius)| Ellipse { center: center.into(), radius })
+      .prop_map(|(center, radius)| Ellipse {
+        center: center.into(),
+        radius,
+      })
   }
   type Strategy = Mapped<(PointView<T, 2>, (R, R)), Ellipse<T, R>>;
 }
@@ -188,10 +200,10 @@ impl<T, R> Arbitrary for Ellipse<T, R>
 // Arbitrary Line
 
 impl<T> Arbitrary for Line<T>
-  where
-    T::Strategy: Clone,
-    T::Parameters: Clone,
-    T: Arbitrary + Scalar + Clone + PartialOrd,
+where
+  T::Strategy: Clone,
+  T::Parameters: Clone,
+  T: Arbitrary + Scalar + Clone + PartialOrd,
 {
   type Parameters = <(PointView<T, 2>, PointView<T, 2>) as Arbitrary>::Parameters;
   fn arbitrary_with(params: Self::Parameters) -> Self::Strategy {
@@ -205,10 +217,10 @@ impl<T> Arbitrary for Line<T>
 // Arbitrary Rectangle
 
 impl<T> Arbitrary for Rectangle<T>
-  where
-    T::Strategy: Clone,
-    T::Parameters: Clone,
-    T: Arbitrary + Scalar + Copy + Ord,
+where
+  T::Strategy: Clone,
+  T::Parameters: Clone,
+  T: Arbitrary + Scalar + Copy + Ord,
 {
   type Parameters = <(PointView<T, 2>, PointView<T, 2>) as Arbitrary>::Parameters;
   fn arbitrary_with(params: Self::Parameters) -> Self::Strategy {
@@ -222,10 +234,10 @@ impl<T> Arbitrary for Rectangle<T>
 // Arbitrary Rectangle
 
 impl<T> Arbitrary for Triangle<T>
-  where
-    T::Strategy: Clone,
-    T::Parameters: Clone,
-    T: Arbitrary + Scalar + Copy + Ord,
+where
+  T::Strategy: Clone,
+  T::Parameters: Clone,
+  T: Arbitrary + Scalar + Copy + Ord,
 {
   type Parameters = <(PointView<T, 2>, PointView<T, 2>, PointView<T, 2>) as Arbitrary>::Parameters;
   fn arbitrary_with(params: Self::Parameters) -> Self::Strategy {

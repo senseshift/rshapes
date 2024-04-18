@@ -8,11 +8,9 @@ pub mod traits;
 pub use traits::distance_squared;
 
 use nalgebra::Scalar;
-pub use nalgebra::{
-  Point2, Vector2,
-};
-use num::Num;
+pub use nalgebra::{Point2, Vector2};
 use num::traits::NumOps;
+use num::Num;
 
 pub trait FloatMath: Scalar + NumOps + PartialOrd + Copy + Into<f64> {}
 

@@ -4,8 +4,8 @@ pub trait Distance<T> {
   fn distance(&self, other: T) -> Self::Result;
 }
 
-pub mod to_point;
 pub mod to_circle;
+pub mod to_point;
 
 pub use to_point::*;
 
