@@ -29,7 +29,6 @@ macro_rules! assert_vec_eq {
 }
 
 type Mapped<I, O> = Map<StrategyFor<I>, fn(_: I) -> O>;
-type FilterMapped<I, O> = FilterMap<StrategyFor<I>, fn(_: I) -> Option<O>>;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Shrinkable point
@@ -118,12 +117,12 @@ where
 ///////////////////////////////////////////////////////////////////////////////
 // Arbitrary Point
 
-impl<T, const N: usize> Into<Point<T, N>> for PointView<T, N>
+impl<T, const N: usize> From<PointView<T, N>> for Point<T, N>
 where
   T: Scalar + Debug + Clone + PartialEq,
 {
-  fn into(self) -> Point<T, N> {
-    self.0
+  fn from(val: PointView<T, N>) -> Self {
+    val.0
   }
 }
 

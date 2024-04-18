@@ -8,14 +8,10 @@ where
   type Result = bool;
 
   fn within(&self, other: &Point2<T>) -> Self::Result {
-    // check if outside
-    if other.x < self.min().x || other.x > self.max().x {
-      return false;
-    } else if other.y < self.min().y || other.y > self.max().y {
-      return false;
-    }
-
-    true
+    self.min().x <= other.x
+      && other.x <= self.max().x
+      && self.min().y <= other.y
+      && other.y <= self.max().y
   }
 }
 impl<T> Within<Point2<T>> for Rectangle<T>
