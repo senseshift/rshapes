@@ -13,10 +13,10 @@ impl Within<&Point2<u8>> for Ellipse<u8, u8> {
       return false;
     }
 
-    let px = ((other.x as f64) - (self.center.x as f64));
+    let px = (other.x as f64) - (self.center.x as f64);
     let px2 = px.powi(2);
 
-    let py = ((other.y as f64) - (self.center.y as f64));
+    let py = (other.y as f64) - (self.center.y as f64);
     let py2 = py.powi(2);
 
     let rx2 = (*self.width() as f64).powi(2);

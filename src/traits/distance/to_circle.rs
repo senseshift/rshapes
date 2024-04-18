@@ -1,9 +1,6 @@
-use nalgebra::{Point2, Scalar};
-use num::traits::{Num, NumOps, Unsigned};
-
 use crate::{
   traits::{distance, Distance},
-  Circle, Ellipse, Line, Rectangle, Shape, ShapeCollection, Triangle,
+  Circle,
 };
 
 impl Distance<&Circle<u8, u8>> for Circle<u8, u8> {

@@ -15,8 +15,8 @@ use crate::*;
 use derivative::Derivative;
 use nalgebra::Scalar;
 use num::Unsigned;
-use std::fmt::{Debug, Display};
-use std::hash::{Hash, Hasher};
+
+use std::hash::Hasher;
 
 #[derive(Derivative)]
 #[derivative(Debug, Clone, Hash, PartialEq, Eq)]
@@ -85,8 +85,8 @@ where
 impl Shape<u8, u8> {
   pub fn center(&self) -> Point2<u8> {
     match self {
-      Self::Ellipse(ellipse) => ellipse.center().clone(),
-      Self::Circle(circle) => circle.center().clone(),
+      Self::Ellipse(ellipse) => *ellipse.center(),
+      Self::Circle(circle) => *circle.center(),
       Self::Rectangle(rectangle) => rectangle.center(),
       Self::Triangle(triangle) => triangle.center(),
       Self::Collection(collection) => collection.center(),
@@ -95,9 +95,9 @@ impl Shape<u8, u8> {
 
   pub fn bbox(&self) -> Rectangle<u8> {
     match self {
-      Self::Ellipse(ellipse) => ellipse.bbox().clone(),
-      Self::Circle(circle) => circle.bbox().clone(),
-      Self::Rectangle(rectangle) => rectangle.clone(),
+      Self::Ellipse(ellipse) => ellipse.bbox(),
+      Self::Circle(circle) => circle.bbox(),
+      Self::Rectangle(rectangle) => *rectangle,
       Self::Triangle(triangle) => triangle.bbox(),
       Self::Collection(collection) => collection.bbox(),
     }

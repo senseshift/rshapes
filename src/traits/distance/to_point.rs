@@ -1,8 +1,5 @@
 use nalgebra::{Point2, Scalar};
-use num::traits::{Num, NumOps, Unsigned};
-use ordered_float::OrderedFloat;
-use std::ops::{Mul, Sub};
-use std::process::Output;
+use num::traits::Unsigned;
 
 use crate::{
   traits::Distance, Circle, Ellipse, FloatMath, Line, Rectangle, Shape, ShapeCollection, Triangle,
@@ -111,9 +108,7 @@ impl Distance<&Point2<u8>> for Circle<u8, u8> {
   fn distance(&self, point: &Point2<u8>) -> Self::Result {
     let distance_to_center = distance(&self.center, point);
 
-    let distance_to_edge = distance_to_center - self.radius as f64;
-
-    distance_to_edge
+    distance_to_center - self.radius as f64
   }
 }
 impl Distance<Point2<u8>> for Circle<u8, u8> {
@@ -129,9 +124,8 @@ impl Distance<&Point2<u8>> for Ellipse<u8, u8> {
 
   fn distance(&self, point: &Point2<u8>) -> f64 {
     use crate::traits::Within;
-    use ordered_float::OrderedFloat;
 
-    if self.within(point) == true {
+    if self.within(point) {
       return 0.0;
     }
 
@@ -191,7 +185,7 @@ impl Distance<&Point2<u8>> for Line<u8> {
       yy = xy1.y + param * d;
     }
 
-    return distance(&xy, &Point2::new(xx, yy));
+    distance(&xy, &Point2::new(xx, yy))
   }
 }
 impl Distance<Point2<u8>> for Line<u8> {
@@ -222,22 +216,10 @@ impl Distance<&Point2<u8>> for Rectangle<u8> {
       return 0.0;
     }
 
-    let top = Line::new(
-      self.min().clone(),
-      Point2::new(self.max().x.clone(), self.min().y.clone()),
-    );
-    let right = Line::new(
-      Point2::new(self.max().x.clone(), self.min().y.clone()),
-      self.max().clone(),
-    );
-    let bottom = Line::new(
-      self.max().clone(),
-      Point2::new(self.min().x.clone(), self.max().y.clone()),
-    );
-    let left = Line::new(
-      Point2::new(self.min().x.clone(), self.max().y.clone()),
-      self.min().clone(),
-    );
+    let top = Line::new(*self.min(), Point2::new(self.max().x, self.min().y));
+    let right = Line::new(Point2::new(self.max().x, self.min().y), *self.max());
+    let bottom = Line::new(*self.max(), Point2::new(self.min().x, self.max().y));
+    let left = Line::new(Point2::new(self.min().x, self.max().y), *self.min());
 
     let distances = [
       top.distance(point),
@@ -281,9 +263,9 @@ impl Distance<&Point2<u8>> for Triangle<u8> {
     //   return 0.0;
     // }
 
-    let a = Line::new(self.0.clone(), self.1.clone());
-    let b = Line::new(self.1.clone(), self.2.clone());
-    let c = Line::new(self.2.clone(), self.0.clone());
+    let a = Line::new(self.0, self.1);
+    let b = Line::new(self.1, self.2);
+    let c = Line::new(self.2, self.0);
 
     let distances = [a.distance(point), b.distance(point), c.distance(point)];
 
@@ -307,8 +289,6 @@ where
   type Result = f64;
 
   fn distance(&self, point: &Point2<T>) -> f64 {
-    use crate::traits::Within;
-
     let mut distances = Vec::new();
 
     for shape in self.shapes.iter() {

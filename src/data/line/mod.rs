@@ -1,8 +1,5 @@
-use crate::*;
 use derivative::Derivative;
 use nalgebra::*;
-use std::fmt::Debug;
-use std::hash::Hash;
 
 #[cfg_attr(
   feature = "serde-serialize",

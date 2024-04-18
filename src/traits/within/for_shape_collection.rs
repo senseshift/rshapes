@@ -13,7 +13,7 @@ where
 
   fn within(&self, other: &Point2<T>) -> Self::Result {
     for geometry in &self.shapes {
-      if geometry.within(other) == true {
+      if geometry.within(other) {
         return true;
       }
     }

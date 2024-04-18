@@ -1,7 +1,4 @@
 use derivative::Derivative;
-use num::{Unsigned, Zero};
-use std::fmt::Debug;
-use std::hash::Hash;
 
 use crate::*;
 
@@ -58,12 +55,12 @@ impl Triangle<u8> {
   pub fn points_inside(&self) -> Vec<Point2<u8>> {
     use crate::traits::Within;
 
-    return self
+    self
       .bbox()
       .points_inside()
       .into_iter()
       .filter(|point| self.within(*point))
-      .collect();
+      .collect()
   }
 }
 

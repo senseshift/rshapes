@@ -1,7 +1,5 @@
 use derivative::Derivative;
-use num::{Num, Zero};
-use std::fmt::Debug;
-use std::hash::Hash;
+use num::Num;
 
 use crate::*;
 

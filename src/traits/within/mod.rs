@@ -4,12 +4,6 @@ mod for_rectangle;
 mod for_shape_collection;
 mod for_triangle;
 
-pub use for_circle::*;
-pub use for_ellipse::*;
-pub use for_rectangle::*;
-pub use for_shape_collection::*;
-pub use for_triangle::*;
-
 use crate::*;
 use num::Unsigned;
 

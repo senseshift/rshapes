@@ -9,7 +9,7 @@ impl Within<&Point2<u8>> for Circle<u8, u8> {
       return other == &self.center;
     }
 
-    return crate::distance_squared(&self.center, other) <= (self.radius as f64).powi(2);
+    crate::distance_squared(&self.center, other) <= (self.radius as f64).powi(2)
   }
 }
 

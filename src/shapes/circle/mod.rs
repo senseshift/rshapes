@@ -1,6 +1,6 @@
 use crate::*;
 
-use num::{Unsigned, Zero};
+use num::Unsigned;
 
 use derivative::Derivative;
 use getset::Getters;
@@ -42,12 +42,12 @@ impl Circle<u8, u8> {
   pub fn points_inside(&self) -> Vec<Point2<u8>> {
     use crate::traits::Within;
 
-    return self
+    self
       .bbox()
       .points_inside()
       .into_iter()
       .filter(|point| self.within(point))
-      .collect();
+      .collect()
   }
 }
 

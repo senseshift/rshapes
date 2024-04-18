@@ -1,8 +1,5 @@
 use derivative::Derivative;
 use getset::Getters;
-use num::{Unsigned, Zero};
-use std::fmt::Debug;
-use std::hash::Hash;
 
 use crate::*;
 
@@ -66,7 +63,7 @@ impl Ellipse<u8, u8> {
         - p1.y * b * sin_phi;
 
       let delta = f / f1;
-      phi = phi - delta;
+      phi -= delta;
       if delta.abs() < epsilon {
         break;
       }
@@ -93,12 +90,12 @@ impl Ellipse<u8, u8> {
   pub fn points_inside(&self) -> Vec<Point2<u8>> {
     use crate::traits::Within;
 
-    return self
+    self
       .bbox()
       .points_inside()
       .into_iter()
       .filter(|point| self.within(*point))
-      .collect();
+      .collect()
   }
 }
 
