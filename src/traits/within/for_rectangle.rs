@@ -32,7 +32,6 @@ where
 #[cfg(test)]
 mod tests {
   use super::*;
-  use crate::*;
 
   use crate::testing::*;
   use test_case::test_case;

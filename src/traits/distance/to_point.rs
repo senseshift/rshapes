@@ -52,7 +52,6 @@ pub fn distance<T>(a: &Point2<T>, b: &Point2<T>) -> f64
 where
   T: FloatMath,
 {
-  use num::integer::Roots;
   distance_squared(a, b).sqrt()
 }
 

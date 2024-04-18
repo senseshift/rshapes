@@ -134,7 +134,6 @@ impl Rectangle<u8> {
 mod tests {
   use super::*;
 
-  use test_case::test_case;
   use test_strategy::proptest;
 
   #[proptest]

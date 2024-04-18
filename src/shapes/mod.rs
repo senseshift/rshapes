@@ -16,8 +16,6 @@ use derivative::Derivative;
 use nalgebra::Scalar;
 use num::Unsigned;
 
-use std::hash::Hasher;
-
 #[derive(Derivative)]
 #[derivative(Debug, Clone, Hash, PartialEq, Eq)]
 pub enum Shape<T, U>

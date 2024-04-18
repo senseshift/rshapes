@@ -31,8 +31,6 @@ mod tests {
   use super::*;
   use crate::*;
 
-  use crate::testing::PointView;
-  use test_case::test_case;
   use test_strategy::proptest;
 
   #[proptest]
