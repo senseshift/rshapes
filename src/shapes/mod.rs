@@ -12,6 +12,7 @@ pub use triangle::*;
 
 use crate::*;
 
+use crate::traits::BoundingBox;
 use derivative::Derivative;
 use nalgebra::Scalar;
 use num::Unsigned;
@@ -91,16 +92,6 @@ impl Shape<u8, u8> {
     }
   }
 
-  pub fn bbox(&self) -> Rectangle<u8> {
-    match self {
-      Self::Ellipse(ellipse) => ellipse.bbox(),
-      Self::Circle(circle) => circle.bbox(),
-      Self::Rectangle(rectangle) => *rectangle,
-      Self::Triangle(triangle) => triangle.bbox(),
-      Self::Collection(collection) => collection.bbox(),
-    }
-  }
-
   pub fn points_inside(&self) -> Vec<Point2<u8>> {
     match self {
       Shape::Ellipse(ellipse) => ellipse.points_inside(),
@@ -108,6 +99,18 @@ impl Shape<u8, u8> {
       Shape::Rectangle(rectangle) => rectangle.points_inside(),
       Shape::Triangle(triangle) => triangle.points_inside(),
       Shape::Collection(collection) => collection.points_inside(),
+    }
+  }
+}
+
+impl BoundingBox<u8> for Shape<u8, u8> {
+  fn bbox(&self) -> Rectangle<u8> {
+    match self {
+      Self::Ellipse(ellipse) => ellipse.bbox(),
+      Self::Circle(circle) => circle.bbox(),
+      Self::Rectangle(rectangle) => rectangle.bbox(),
+      Self::Triangle(triangle) => triangle.bbox(),
+      Self::Collection(collection) => collection.bbox(),
     }
   }
 }

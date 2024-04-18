@@ -1,6 +1,7 @@
 use derivative::Derivative;
 use num::Num;
 
+use crate::traits::BoundingBox;
 use crate::*;
 
 #[cfg_attr(
@@ -127,6 +128,12 @@ impl Rectangle<u8> {
     }
 
     points
+  }
+}
+
+impl BoundingBox<u8> for Rectangle<u8> {
+  fn bbox(&self) -> Rectangle<u8> {
+    *self
   }
 }
 

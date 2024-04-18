@@ -1,3 +1,4 @@
+use crate::traits::BoundingBox;
 use crate::*;
 
 use num::Unsigned;
@@ -26,7 +27,20 @@ where
 }
 
 impl Circle<u8, u8> {
-  pub fn bbox(&self) -> Rectangle<u8> {
+  pub fn points_inside(&self) -> Vec<Point2<u8>> {
+    use crate::traits::Within;
+
+    self
+      .bbox()
+      .points_inside()
+      .into_iter()
+      .filter(|point| self.within(point))
+      .collect()
+  }
+}
+
+impl BoundingBox<u8> for Circle<u8, u8> {
+  fn bbox(&self) -> Rectangle<u8> {
     let radius = self.radius as i16;
     let center = self.center.map(|x| x as i16);
 
@@ -37,17 +51,6 @@ impl Circle<u8, u8> {
       min.map(|x| x.clamp(0, u8::MAX as i16) as u8),
       max.map(|x| x.clamp(0, u8::MAX as i16) as u8),
     )
-  }
-
-  pub fn points_inside(&self) -> Vec<Point2<u8>> {
-    use crate::traits::Within;
-
-    self
-      .bbox()
-      .points_inside()
-      .into_iter()
-      .filter(|point| self.within(point))
-      .collect()
   }
 }
 

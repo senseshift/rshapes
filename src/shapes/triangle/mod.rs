@@ -1,5 +1,6 @@
 use derivative::Derivative;
 
+use crate::traits::BoundingBox;
 use crate::*;
 
 #[cfg_attr(
@@ -40,18 +41,6 @@ impl Triangle<u8> {
     )
   }
 
-  pub fn bbox(&self) -> Rectangle<u8> {
-    let min_x = self.0.x.min(self.1.x).min(self.2.x);
-    let min_y = self.0.y.min(self.1.y).min(self.2.y);
-    let max_x = self.0.x.max(self.1.x).max(self.2.x);
-    let max_y = self.0.y.max(self.1.y).max(self.2.y);
-
-    Rectangle::new(
-      Point2::new(min_x, min_y),
-      Point2::new(max_x, max_y).map(|x| x.saturating_add(1)),
-    )
-  }
-
   pub fn points_inside(&self) -> Vec<Point2<u8>> {
     use crate::traits::Within;
 
@@ -61,6 +50,20 @@ impl Triangle<u8> {
       .into_iter()
       .filter(|point| self.within(*point))
       .collect()
+  }
+}
+
+impl BoundingBox<u8> for Triangle<u8> {
+  fn bbox(&self) -> Rectangle<u8> {
+    let min_x = self.0.x.min(self.1.x).min(self.2.x);
+    let min_y = self.0.y.min(self.1.y).min(self.2.y);
+    let max_x = self.0.x.max(self.1.x).max(self.2.x);
+    let max_y = self.0.y.max(self.1.y).max(self.2.y);
+
+    Rectangle::new(
+      Point2::new(min_x, min_y),
+      Point2::new(max_x, max_y).map(|x| x.saturating_add(1)),
+    )
   }
 }
 

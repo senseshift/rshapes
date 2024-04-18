@@ -1,6 +1,7 @@
 use derivative::Derivative;
 use getset::Getters;
 
+use crate::traits::BoundingBox;
 use crate::*;
 
 #[cfg_attr(
@@ -75,18 +76,6 @@ impl Ellipse<u8, u8> {
     Point2::new(x, y)
   }
 
-  pub fn bbox(&self) -> Rectangle<u8> {
-    let x = self.center.x as f64 - self.radius.0 as f64;
-    let y = self.center.y as f64 - self.radius.1 as f64;
-    let width = self.radius.0 as f64 * 2.0 + 1.;
-    let height = self.radius.1 as f64 * 2.0 + 1.;
-
-    Rectangle::new(
-      Point2::new(x, y).map(|c| c as u8),
-      Point2::new(x + width, y + height).map(|c| c as u8),
-    )
-  }
-
   pub fn points_inside(&self) -> Vec<Point2<u8>> {
     use crate::traits::Within;
 
@@ -96,6 +85,20 @@ impl Ellipse<u8, u8> {
       .into_iter()
       .filter(|point| self.within(*point))
       .collect()
+  }
+}
+
+impl BoundingBox<u8> for Ellipse<u8, u8> {
+  fn bbox(&self) -> Rectangle<u8> {
+    let x = self.center.x as f64 - self.radius.0 as f64;
+    let y = self.center.y as f64 - self.radius.1 as f64;
+    let width = self.radius.0 as f64 * 2.0 + 1.;
+    let height = self.radius.1 as f64 * 2.0 + 1.;
+
+    Rectangle::new(
+      Point2::new(x, y).map(|c| c as u8),
+      Point2::new(x + width, y + height).map(|c| c as u8),
+    )
   }
 }
 

@@ -1,3 +1,4 @@
+use crate::traits::BoundingBox;
 use nalgebra::{Point2, Scalar, Vector2};
 use num::Unsigned;
 use std::collections::HashSet;
@@ -102,7 +103,21 @@ impl ShapeCollection<u8, u8> {
     center.div(self.shapes.len() as f64).map(|x| x as u8).into()
   }
 
-  pub fn bbox(&self) -> Rectangle<u8> {
+  pub fn points_inside(&self) -> Vec<Point2<u8>> {
+    let mut points = Vec::new();
+    for geometry in &self.shapes {
+      points.extend(geometry.points_inside());
+    }
+    points
+      .into_iter()
+      .collect::<HashSet<_>>()
+      .into_iter()
+      .collect()
+  }
+}
+
+impl BoundingBox<u8> for ShapeCollection<u8, u8> {
+  fn bbox(&self) -> Rectangle<u8> {
     let bboxes = self.shapes.iter().map(|x| x.bbox());
 
     let mut min = Point2::new(u8::MAX, u8::MAX);
@@ -114,18 +129,6 @@ impl ShapeCollection<u8, u8> {
     }
 
     Rectangle::new(min, max)
-  }
-
-  pub fn points_inside(&self) -> Vec<Point2<u8>> {
-    let mut points = Vec::new();
-    for geometry in &self.shapes {
-      points.extend(geometry.points_inside());
-    }
-    points
-      .into_iter()
-      .collect::<HashSet<_>>()
-      .into_iter()
-      .collect()
   }
 }
 
