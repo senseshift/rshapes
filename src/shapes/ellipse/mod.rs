@@ -76,8 +76,10 @@ impl Ellipse<u8, u8> {
 
     Point2::new(x, y)
   }
+}
 
-  pub fn points_inside(&self) -> Vec<Point2<u8>> {
+impl PointsInside<u8> for Ellipse<u8, u8> {
+  fn points_inside(&self) -> Vec<Point2<u8>> {
     self
       .bbox()
       .points_inside()

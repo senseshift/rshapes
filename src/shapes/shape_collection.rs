@@ -1,4 +1,4 @@
-use crate::traits::{BoundingBox, Centroid};
+use crate::traits::{BoundingBox, Centroid, PointsInside};
 use nalgebra::{Point2, Scalar, Vector2};
 use num::Unsigned;
 use std::collections::HashSet;
@@ -94,8 +94,8 @@ where
 {
 }
 
-impl ShapeCollection<u8, u8> {
-  pub fn points_inside(&self) -> Vec<Point2<u8>> {
+impl PointsInside<u8> for ShapeCollection<u8, u8> {
+  fn points_inside(&self) -> Vec<Point2<u8>> {
     let mut points = Vec::new();
     for geometry in &self.shapes {
       points.extend(geometry.points_inside());

@@ -12,7 +12,7 @@ pub use triangle::*;
 
 use crate::*;
 
-use crate::traits::{BoundingBox, Centroid};
+use crate::traits::{BoundingBox, Centroid, PointsInside};
 use derivative::Derivative;
 use nalgebra::Scalar;
 use num::Unsigned;
@@ -81,8 +81,8 @@ where
   }
 }
 
-impl Shape<u8, u8> {
-  pub fn points_inside(&self) -> Vec<Point2<u8>> {
+impl PointsInside<u8> for Shape<u8, u8> {
+  fn points_inside(&self) -> Vec<Point2<u8>> {
     match self {
       Shape::Ellipse(ellipse) => ellipse.points_inside(),
       Shape::Circle(circle) => circle.points_inside(),

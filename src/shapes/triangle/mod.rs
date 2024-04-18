@@ -1,6 +1,6 @@
 use derivative::Derivative;
 
-use crate::traits::{BoundingBox, Centroid};
+use crate::traits::{BoundingBox, Centroid, PointsInside};
 use crate::*;
 
 #[cfg_attr(
@@ -21,8 +21,8 @@ where
   }
 }
 
-impl Triangle<u8> {
-  pub fn points_inside(&self) -> Vec<Point2<u8>> {
+impl PointsInside<u8> for Triangle<u8> {
+  fn points_inside(&self) -> Vec<Point2<u8>> {
     use crate::traits::Within;
 
     self

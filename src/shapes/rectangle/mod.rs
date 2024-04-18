@@ -81,12 +81,12 @@ where
   }
 }
 
-impl Rectangle<u8> {
+impl PointsInside<u8> for Rectangle<u8> {
   /// Returns a vector of all points inside the rectangle.
   ///
   /// # Example
   /// ```rust
-  /// use rshapes::{Point2, Rectangle};
+  /// use rshapes::{Point2, Rectangle, traits::PointsInside};
   ///
   /// let rectangle = Rectangle::new(Point2::new(0, 0), Point2::new(2, 2));
   /// assert_eq!(rectangle.points_inside(), vec![
@@ -101,7 +101,7 @@ impl Rectangle<u8> {
   ///   Point2::new(2, 2),
   /// ]);
   /// ```
-  pub fn points_inside(&self) -> Vec<Point2<u8>> {
+  fn points_inside(&self) -> Vec<Point2<u8>> {
     let mut points = Vec::with_capacity(self.width() as usize * self.height() as usize);
 
     for x in self.min().x..self.max().x.saturating_add(1) {

@@ -26,8 +26,8 @@ where
   }
 }
 
-impl Circle<u8, u8> {
-  pub fn points_inside(&self) -> Vec<Point2<u8>> {
+impl PointsInside<u8> for Circle<u8, u8> {
+  fn points_inside(&self) -> Vec<Point2<u8>> {
     self
       .bbox()
       .points_inside()
