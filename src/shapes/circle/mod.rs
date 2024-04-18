@@ -1,4 +1,4 @@
-use crate::traits::BoundingBox;
+use crate::traits::*;
 use crate::*;
 
 use num::Unsigned;
@@ -28,8 +28,6 @@ where
 
 impl Circle<u8, u8> {
   pub fn points_inside(&self) -> Vec<Point2<u8>> {
-    use crate::traits::Within;
-
     self
       .bbox()
       .points_inside()
@@ -51,6 +49,16 @@ impl BoundingBox<u8> for Circle<u8, u8> {
       min.map(|x| x.clamp(0, u8::MAX as i16) as u8),
       max.map(|x| x.clamp(0, u8::MAX as i16) as u8),
     )
+  }
+}
+
+impl<T, R> Centroid<T> for Circle<T, R>
+where
+  T: Scalar,
+  R: Scalar + Unsigned,
+{
+  fn centroid(&self) -> Point2<T> {
+    self.center.clone()
   }
 }
 

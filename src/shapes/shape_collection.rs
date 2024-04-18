@@ -1,4 +1,4 @@
-use crate::traits::BoundingBox;
+use crate::traits::{BoundingBox, Centroid};
 use nalgebra::{Point2, Scalar, Vector2};
 use num::Unsigned;
 use std::collections::HashSet;
@@ -95,14 +95,6 @@ where
 }
 
 impl ShapeCollection<u8, u8> {
-  pub fn center(&self) -> Point2<u8> {
-    let mut center = Vector2::new(0., 0.);
-    for geometry in &self.shapes {
-      center += geometry.center().coords.map(|x| x as f64);
-    }
-    center.div(self.shapes.len() as f64).map(|x| x as u8).into()
-  }
-
   pub fn points_inside(&self) -> Vec<Point2<u8>> {
     let mut points = Vec::new();
     for geometry in &self.shapes {
@@ -129,6 +121,32 @@ impl BoundingBox<u8> for ShapeCollection<u8, u8> {
     }
 
     Rectangle::new(min, max)
+  }
+}
+
+// impl<T, U> Centroid<T> for ShapeCollection<T, U>
+//   where
+//     T: Scalar + Eq + From<f64>,
+//     U: Scalar + Unsigned + Eq,
+//     Shape<T, U>: Centroid<T>,
+//     f64: From<T>
+// {
+//   fn centroid(&self) -> Point2<T> {
+//     let mut center = Vector2::new(0., 0.);
+//     for geometry in &self.shapes {
+//       center += geometry.centroid().coords.map(|x| x.into());
+//     }
+//     center.div(self.shapes.len() as f64).map(|x| x.into()).into()
+//   }
+// }
+
+impl Centroid<u8> for ShapeCollection<u8, u8> {
+  fn centroid(&self) -> Point2<u8> {
+    let mut center = Vector2::new(0., 0.);
+    for geometry in &self.shapes {
+      center += geometry.centroid().coords.map(|x| x as f64);
+    }
+    center.div(self.shapes.len() as f64).map(|x| x as u8).into()
   }
 }
 

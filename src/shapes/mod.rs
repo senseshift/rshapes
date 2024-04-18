@@ -12,7 +12,7 @@ pub use triangle::*;
 
 use crate::*;
 
-use crate::traits::BoundingBox;
+use crate::traits::{BoundingBox, Centroid};
 use derivative::Derivative;
 use nalgebra::Scalar;
 use num::Unsigned;
@@ -82,16 +82,6 @@ where
 }
 
 impl Shape<u8, u8> {
-  pub fn center(&self) -> Point2<u8> {
-    match self {
-      Self::Ellipse(ellipse) => *ellipse.center(),
-      Self::Circle(circle) => *circle.center(),
-      Self::Rectangle(rectangle) => rectangle.center(),
-      Self::Triangle(triangle) => triangle.center(),
-      Self::Collection(collection) => collection.center(),
-    }
-  }
-
   pub fn points_inside(&self) -> Vec<Point2<u8>> {
     match self {
       Shape::Ellipse(ellipse) => ellipse.points_inside(),
@@ -99,6 +89,18 @@ impl Shape<u8, u8> {
       Shape::Rectangle(rectangle) => rectangle.points_inside(),
       Shape::Triangle(triangle) => triangle.points_inside(),
       Shape::Collection(collection) => collection.points_inside(),
+    }
+  }
+}
+
+impl Centroid<u8> for Shape<u8, u8> {
+  fn centroid(&self) -> Point2<u8> {
+    match self {
+      Self::Ellipse(ellipse) => ellipse.centroid(),
+      Self::Circle(circle) => circle.centroid(),
+      Self::Rectangle(rectangle) => rectangle.centroid(),
+      Self::Triangle(triangle) => triangle.centroid(),
+      Self::Collection(collection) => collection.centroid(),
     }
   }
 }

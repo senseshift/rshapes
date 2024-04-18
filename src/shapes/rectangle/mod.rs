@@ -1,7 +1,7 @@
 use derivative::Derivative;
 use num::Num;
 
-use crate::traits::BoundingBox;
+use crate::traits::*;
 use crate::*;
 
 #[cfg_attr(
@@ -82,23 +82,6 @@ where
 }
 
 impl Rectangle<u8> {
-  /// Returns the center of the rectangle.
-  ///
-  /// # Example
-  /// ```rust
-  /// use rshapes::{Point2, Rectangle};
-  ///
-  /// let rectangle = Rectangle::new(Point2::new(0, 0), Point2::new(10, 10));
-  /// assert_eq!(rectangle.center(), Point2::new(5, 5));
-  ///
-  /// ```
-  pub fn center(&self) -> Point2<u8> {
-    let min = self.min().map(|x| x as u16);
-    let max = self.max().map(|x| x as u16);
-
-    Point2::new(((min.x + max.x) / 2) as u8, ((min.y + max.y) / 2) as u8)
-  }
-
   /// Returns a vector of all points inside the rectangle.
   ///
   /// # Example
@@ -131,9 +114,31 @@ impl Rectangle<u8> {
   }
 }
 
-impl BoundingBox<u8> for Rectangle<u8> {
-  fn bbox(&self) -> Rectangle<u8> {
-    *self
+impl<T> BoundingBox<T> for Rectangle<T>
+where
+  T: Scalar + Num,
+{
+  fn bbox(&self) -> Rectangle<T> {
+    self.clone()
+  }
+}
+
+impl Centroid<u8> for Rectangle<u8> {
+  /// Returns the center of the rectangle.
+  ///
+  /// # Example
+  /// ```rust
+  /// use rshapes::{Point2, Rectangle, traits::Centroid};
+  ///
+  /// let rectangle = Rectangle::new(Point2::new(0, 0), Point2::new(10, 10));
+  /// assert_eq!(rectangle.centroid(), Point2::new(5, 5));
+  ///
+  /// ```
+  fn centroid(&self) -> Point2<u8> {
+    let min = self.min().map(|x| x as u16);
+    let max = self.max().map(|x| x as u16);
+
+    Point2::new(((min.x + max.x) / 2) as u8, ((min.y + max.y) / 2) as u8)
   }
 }
 

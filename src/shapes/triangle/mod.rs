@@ -1,6 +1,6 @@
 use derivative::Derivative;
 
-use crate::traits::BoundingBox;
+use crate::traits::{BoundingBox, Centroid};
 use crate::*;
 
 #[cfg_attr(
@@ -22,25 +22,6 @@ where
 }
 
 impl Triangle<u8> {
-  /// Returns the center of the triangle.
-  ///
-  /// # Example
-  /// ```rust
-  /// use rshapes::{Point2, Triangle};
-  ///
-  /// let triangle = Triangle::new([0, 0].into(), [10, 0].into(), [0, 10].into());
-  /// assert_eq!(triangle.center(), [3, 3].into());
-  /// ```
-  pub fn center(&self) -> Point2<u8> {
-    let x_sum: u16 = self.0.x as u16 + self.1.x as u16 + self.2.x as u16;
-    let y_sum: u16 = self.0.y as u16 + self.1.y as u16 + self.2.y as u16;
-
-    Point2::new(
-      (x_sum as f64 / 3.0).round() as u8,
-      (y_sum as f64 / 3.0).round() as u8,
-    )
-  }
-
   pub fn points_inside(&self) -> Vec<Point2<u8>> {
     use crate::traits::Within;
 
@@ -50,6 +31,27 @@ impl Triangle<u8> {
       .into_iter()
       .filter(|point| self.within(*point))
       .collect()
+  }
+}
+
+impl Centroid<u8> for Triangle<u8> {
+  /// Returns the center of the triangle.
+  ///
+  /// # Example
+  /// ```rust
+  /// use rshapes::{Point2, Triangle, traits::Centroid};
+  ///
+  /// let triangle = Triangle::new([0, 0].into(), [10, 0].into(), [0, 10].into());
+  /// assert_eq!(triangle.centroid(), [3, 3].into());
+  /// ```
+  fn centroid(&self) -> Point2<u8> {
+    let x_sum: u16 = self.0.x as u16 + self.1.x as u16 + self.2.x as u16;
+    let y_sum: u16 = self.0.y as u16 + self.1.y as u16 + self.2.y as u16;
+
+    Point2::new(
+      (x_sum as f64 / 3.0).round() as u8,
+      (y_sum as f64 / 3.0).round() as u8,
+    )
   }
 }
 

@@ -1,7 +1,8 @@
 use derivative::Derivative;
 use getset::Getters;
+use num::Unsigned;
 
-use crate::traits::BoundingBox;
+use crate::traits::*;
 use crate::*;
 
 #[cfg_attr(
@@ -77,8 +78,6 @@ impl Ellipse<u8, u8> {
   }
 
   pub fn points_inside(&self) -> Vec<Point2<u8>> {
-    use crate::traits::Within;
-
     self
       .bbox()
       .points_inside()
@@ -99,6 +98,16 @@ impl BoundingBox<u8> for Ellipse<u8, u8> {
       Point2::new(x, y).map(|c| c as u8),
       Point2::new(x + width, y + height).map(|c| c as u8),
     )
+  }
+}
+
+impl<T, R> Centroid<T> for Ellipse<T, R>
+where
+  T: Scalar,
+  R: Scalar + Unsigned,
+{
+  fn centroid(&self) -> Point2<T> {
+    self.center.clone()
   }
 }
 
