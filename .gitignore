@@ -1,2 +1,5 @@
-/target
+/target/
+/mutants.out/
+/mutants.out.old/
+/.cargo/config.toml
 /Cargo.lock
