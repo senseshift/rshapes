@@ -131,6 +131,11 @@ mod tests {
     let _out = ellipse.bbox();
   }
 
+  #[proptest]
+  fn rectangle_bbox_u8(rectangle: Rectangle<u8>) {
+    assert_eq!(rectangle.bbox(), rectangle);
+  }
+
   #[test_case(Triangle::new([0, 0].into(), [10, 0].into(), [0, 10].into()), Point2::new(0, 0), Point2::new(10, 10); "normal")]
   fn triangle_bbox_u8(triangle: Triangle<u8>, min: Point2<u8>, max: Point2<u8>) {
     let bbox = triangle.bbox();
@@ -142,5 +147,19 @@ mod tests {
   #[proptest]
   fn triangle_bbox_u8_fuzz(triangle: Triangle<u8>) {
     let _bbox = triangle.bbox();
+  }
+
+  #[test]
+  fn shape_collection_bbox_u8() {
+    let collection = ShapeCollection::new(vec![
+      Shape::Rectangle(Rectangle::new(Point2::new(0, 0), Point2::new(2, 2))),
+      Shape::Rectangle(Rectangle::new(Point2::new(2, 2), Point2::new(4, 4))),
+      Shape::Rectangle(Rectangle::new(Point2::new(4, 4), Point2::new(6, 6))),
+    ]);
+
+    let bbox = collection.bbox();
+
+    assert_eq!(bbox.min(), &Point2::new(0, 0));
+    assert_eq!(bbox.max(), &Point2::new(6, 6));
   }
 }

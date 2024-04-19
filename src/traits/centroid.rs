@@ -128,6 +128,7 @@ mod tests {
   }
 
   #[test_case(Rectangle::new(Point2::new(0, 0), Point2::new(10, 10)), Point2::new(5, 5); "normal")]
+  #[test_case(Rectangle::new(Point2::new(3, 3), Point2::new(11, 11)), Point2::new(7, 7); "odd")]
   fn rectangle_centroid_u8(rectangle: Rectangle<u8>, expected_center: Point2<u8>) {
     assert_eq!(rectangle.centroid(), expected_center);
   }
@@ -137,7 +138,8 @@ mod tests {
     let _out = rectangle.centroid();
   }
 
-  #[test_case(Triangle::new([0, 0].into(), [10, 0].into(), [0, 10].into()), [3, 3].into(); "normal")]
+  #[test_case(Triangle::new([15, 15].into(), [25, 15].into(), [20, 25].into()), [20, 18].into(); "normal")]
+  #[test_case(Triangle::new([0, 0].into(), [10, 0].into(), [0, 10].into()), [3, 3].into(); "edge/top+start")]
   fn triangle_centroid_u8(triangle: Triangle<u8>, centroid: Point2<u8>) {
     assert_eq!(triangle.centroid(), centroid);
   }
@@ -145,5 +147,16 @@ mod tests {
   #[proptest]
   fn triangle_centroid_u8_fuzz(triangle: Triangle<u8>) {
     let _centroid = triangle.centroid();
+  }
+
+  #[test]
+  fn shape_collection_centroid_u8() {
+    let collection = ShapeCollection::new(vec![
+      Shape::Rectangle(Rectangle::new(Point2::new(0, 0), Point2::new(2, 2))),
+      Shape::Rectangle(Rectangle::new(Point2::new(2, 2), Point2::new(4, 4))),
+      Shape::Rectangle(Rectangle::new(Point2::new(4, 4), Point2::new(6, 6))),
+    ]);
+
+    assert_eq!(collection.centroid(), Point2::new(3, 3));
   }
 }

@@ -13,6 +13,14 @@ use proptest::test_runner::*;
 #[macro_export]
 macro_rules! assert_vec_eq {
   ($left:expr, $right:expr) => {
+    // compare debug representations
+    assert_eq!(format!("{:?}", $left), format!("{:?}", $right));
+  };
+}
+
+#[macro_export]
+macro_rules! assert_vec_eq_unordered {
+  ($left:expr, $right:expr) => {
     $left.iter().for_each(|a| {
       assert!(
         $right.contains(a),

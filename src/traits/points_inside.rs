@@ -7,6 +7,7 @@ pub trait PointsInside<T: Scalar> {
 }
 
 impl<T: Scalar, U: PointsInside<T>> PointsInside<T> for &U {
+  #[cfg_attr(test, mutants::skip)]
   fn points_inside(&self) -> Vec<Point2<T>> {
     U::points_inside(*self)
   }
@@ -66,6 +67,7 @@ impl PointsInside<u8> for Rectangle<u8> {
   ///   Point2::new(2, 2),
   /// ]);
   /// ```
+  #[cfg_attr(test, mutants::skip)] // Prevent vector capacity from being mutated
   fn points_inside(&self) -> Vec<Point2<u8>> {
     let mut points = Vec::with_capacity(self.width() as usize * self.height() as usize);
 
@@ -115,7 +117,7 @@ mod tests {
     let circle = Circle::new(Point2::new(5, 5), 2);
     let points = circle.points_inside();
 
-    let expected = vec![
+    let expected: Vec<Point2<u8>> = vec![
       Point2::new(3, 5),
       Point2::new(4, 4),
       Point2::new(4, 5),
@@ -176,9 +178,58 @@ mod tests {
     let _out = circle.points_inside();
   }
 
+  #[test]
+  fn ellipse_points_inside_u8() {
+    let ellipse = Ellipse::new(Point2::new(5, 5), (2, 1));
+    let points = ellipse.points_inside();
+
+    let expected = vec![
+      Point2::new(3, 5),
+      Point2::new(4, 5),
+      Point2::new(5, 4),
+      Point2::new(5, 5),
+      Point2::new(5, 6),
+      Point2::new(6, 5),
+      Point2::new(7, 5),
+    ];
+
+    assert_vec_eq!(points, expected);
+  }
+
   #[proptest]
   fn ellipse_points_inside_u8_fuzz(ellipse: Ellipse<u8, u8>) {
     let _out = ellipse.points_inside();
+  }
+
+  #[test]
+  fn rectangle_points_inside_u8() {
+    let rectangle = Rectangle::new(Point2::new(10, 10), Point2::new(13, 14));
+    let points = rectangle.points_inside();
+
+    let expected = vec![
+      Point2::new(10, 10),
+      Point2::new(10, 11),
+      Point2::new(10, 12),
+      Point2::new(10, 13),
+      Point2::new(10, 14),
+      Point2::new(11, 10),
+      Point2::new(11, 11),
+      Point2::new(11, 12),
+      Point2::new(11, 13),
+      Point2::new(11, 14),
+      Point2::new(12, 10),
+      Point2::new(12, 11),
+      Point2::new(12, 12),
+      Point2::new(12, 13),
+      Point2::new(12, 14),
+      Point2::new(13, 10),
+      Point2::new(13, 11),
+      Point2::new(13, 12),
+      Point2::new(13, 13),
+      Point2::new(13, 14),
+    ];
+
+    assert_vec_eq!(points, expected);
   }
 
   #[proptest]
@@ -186,8 +237,57 @@ mod tests {
     let _out = rectangle.points_inside();
   }
 
+  #[test]
+  fn triangle_points_inside_u8() {
+    let triangle = Triangle::new(Point2::new(0, 0), Point2::new(2, 0), Point2::new(0, 2));
+    let points = triangle.points_inside();
+
+    let expected = vec![
+      Point2::new(0, 0),
+      Point2::new(0, 1),
+      Point2::new(0, 2),
+      Point2::new(1, 0),
+      Point2::new(1, 1),
+      Point2::new(2, 0),
+    ];
+
+    assert_vec_eq!(points, expected);
+  }
+
   #[proptest]
   fn triangle_points_inside_u8_fuzz(triangle: Triangle<u8>) {
     let _points = triangle.points_inside();
+  }
+
+  #[test]
+  fn shape_collection_points_inside_u8() {
+    let collection = ShapeCollection::new(vec![
+      Shape::Rectangle(Rectangle::new(Point2::new(0, 0), Point2::new(2, 2))),
+      Shape::Rectangle(Rectangle::new(Point2::new(2, 2), Point2::new(4, 4))),
+    ]);
+
+    let points = collection.points_inside();
+
+    let expected = vec![
+      Point2::new(0, 0),
+      Point2::new(0, 1),
+      Point2::new(0, 2),
+      Point2::new(1, 0),
+      Point2::new(1, 1),
+      Point2::new(1, 2),
+      Point2::new(2, 0),
+      Point2::new(2, 1),
+      Point2::new(2, 2),
+      Point2::new(2, 3),
+      Point2::new(2, 4),
+      Point2::new(3, 2),
+      Point2::new(3, 3),
+      Point2::new(3, 4),
+      Point2::new(4, 2),
+      Point2::new(4, 3),
+      Point2::new(4, 4),
+    ];
+
+    assert_vec_eq_unordered!(points, expected);
   }
 }

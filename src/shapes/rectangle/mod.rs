@@ -35,13 +35,26 @@ impl<T> Rectangle<T>
 where
   T: Scalar + PartialOrd + Copy,
 {
+  /// Creates a new rectangle from two points and normalizes the corners.
+  ///
+  /// # Example
+  /// ```rust
+  /// use rshapes::{Point2, Rectangle};
+  ///
+  /// let a = Point2::new(0, 10);
+  /// let b = Point2::new(10, 0);
+  /// let rectangle = Rectangle::new(a, b);
+  ///
+  /// assert_eq!(rectangle.min(), &Point2::new(0, 0));
+  /// assert_eq!(rectangle.max(), &Point2::new(10, 10));
+  /// ```
   pub fn new(a: Point2<T>, b: Point2<T>) -> Self {
     let x_max = if a.x > b.x { a.x } else { b.x };
     let x_min = if a.x < b.x { a.x } else { b.x };
     let y_max = if a.y > b.y { a.y } else { b.y };
     let y_min = if a.y < b.y { a.y } else { b.y };
 
-    Self(Point2::new(x_min, y_min), Point2::new(x_max, y_max))
+    Self::new_unchecked(Point2::new(x_min, y_min), Point2::new(x_max, y_max))
   }
 }
 
