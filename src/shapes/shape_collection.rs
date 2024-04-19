@@ -1,11 +1,10 @@
-use nalgebra::{Point2, Scalar, Vector2};
+use nalgebra::Scalar;
 use num::Unsigned;
-use std::collections::HashSet;
+
 use std::fmt::{Debug, Formatter};
 use std::hash::{Hash, Hasher};
-use std::ops::Div;
 
-use super::{Rectangle, Shape};
+use super::Shape;
 
 pub struct ShapeCollection<T, U>
 where
@@ -91,42 +90,6 @@ where
   U: Scalar + Unsigned + Eq,
   Shape<T, U>: Eq,
 {
-}
-
-impl ShapeCollection<u8, u8> {
-  pub fn center(&self) -> Point2<u8> {
-    let mut center = Vector2::new(0., 0.);
-    for geometry in &self.shapes {
-      center += geometry.center().coords.map(|x| x as f64);
-    }
-    center.div(self.shapes.len() as f64).map(|x| x as u8).into()
-  }
-
-  pub fn bbox(&self) -> Rectangle<u8> {
-    let bboxes = self.shapes.iter().map(|x| x.bbox());
-
-    let mut min = Point2::new(u8::MAX, u8::MAX);
-    let mut max = Point2::new(u8::MIN, u8::MIN);
-
-    for bbox in bboxes {
-      min = Point2::new(min.x.min(bbox.min().x), min.y.min(bbox.min().y));
-      max = Point2::new(max.x.max(bbox.max().x), max.y.max(bbox.max().y));
-    }
-
-    Rectangle::new(min, max)
-  }
-
-  pub fn points_inside(&self) -> Vec<Point2<u8>> {
-    let mut points = Vec::new();
-    for geometry in &self.shapes {
-      points.extend(geometry.points_inside());
-    }
-    points
-      .into_iter()
-      .collect::<HashSet<_>>()
-      .into_iter()
-      .collect()
-  }
 }
 
 #[cfg(test)]

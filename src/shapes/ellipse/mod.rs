@@ -74,44 +74,7 @@ impl Ellipse<u8, u8> {
 
     Point2::new(x, y)
   }
-
-  pub fn bbox(&self) -> Rectangle<u8> {
-    let x = self.center.x as f64 - self.radius.0 as f64;
-    let y = self.center.y as f64 - self.radius.1 as f64;
-    let width = self.radius.0 as f64 * 2.0 + 1.;
-    let height = self.radius.1 as f64 * 2.0 + 1.;
-
-    Rectangle::new(
-      Point2::new(x, y).map(|c| c as u8),
-      Point2::new(x + width, y + height).map(|c| c as u8),
-    )
-  }
-
-  pub fn points_inside(&self) -> Vec<Point2<u8>> {
-    use crate::traits::Within;
-
-    self
-      .bbox()
-      .points_inside()
-      .into_iter()
-      .filter(|point| self.within(*point))
-      .collect()
-  }
 }
 
 #[cfg(test)]
-mod tests {
-  use super::*;
-
-  use test_strategy::proptest;
-
-  #[proptest]
-  fn ellipse_bbox_u8_fuzz(ellipse: Ellipse<u8, u8>) {
-    let _out = ellipse.bbox();
-  }
-
-  #[proptest]
-  fn ellipse_points_inside_u8_fuzz(ellipse: Ellipse<u8, u8>) {
-    let _out = ellipse.points_inside();
-  }
-}
+mod tests {}

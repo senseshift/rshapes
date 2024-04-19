@@ -13,6 +13,14 @@ use proptest::test_runner::*;
 #[macro_export]
 macro_rules! assert_vec_eq {
   ($left:expr, $right:expr) => {
+    // compare debug representations
+    assert_eq!(format!("{:?}", $left), format!("{:?}", $right));
+  };
+}
+
+#[macro_export]
+macro_rules! assert_vec_eq_unordered {
+  ($left:expr, $right:expr) => {
     $left.iter().for_each(|a| {
       assert!(
         $right.contains(a),
@@ -137,8 +145,8 @@ where
 
 impl<T> Arbitrary for PointView<T, 2>
 where
-  T::Strategy: Clone,
-  T::Parameters: Clone,
+  <T as Arbitrary>::Strategy: Clone,
+  <T as Arbitrary>::Parameters: Clone,
   T: Arbitrary + Scalar + Clone,
 {
   type Parameters = T::Parameters;
@@ -153,11 +161,11 @@ where
 
 impl<T, R> Arbitrary for Circle<T, R>
 where
-  T::Strategy: Clone,
-  T::Parameters: Clone,
+  <T as Arbitrary>::Strategy: Clone,
+  <T as Arbitrary>::Parameters: Clone,
   T: Arbitrary + Scalar + Clone,
-  R::Strategy: Clone,
-  R::Parameters: Clone,
+  <R as Arbitrary>::Strategy: Clone,
+  <R as Arbitrary>::Parameters: Clone,
   R: Arbitrary + Scalar + Unsigned + Clone,
 {
   type Parameters = <(T, R) as Arbitrary>::Parameters;
@@ -177,11 +185,11 @@ where
 
 impl<T, R> Arbitrary for Ellipse<T, R>
 where
-  T::Strategy: Clone,
-  T::Parameters: Clone,
+  <T as Arbitrary>::Strategy: Clone,
+  <T as Arbitrary>::Parameters: Clone,
   T: Arbitrary + Scalar + Clone,
-  R::Strategy: Clone,
-  R::Parameters: Clone,
+  <R as Arbitrary>::Strategy: Clone,
+  <R as Arbitrary>::Parameters: Clone,
   R: Arbitrary + Scalar + Unsigned + Clone,
 {
   type Parameters = <(T, R) as Arbitrary>::Parameters;
@@ -200,8 +208,8 @@ where
 
 impl<T> Arbitrary for Line<T>
 where
-  T::Strategy: Clone,
-  T::Parameters: Clone,
+  <T as Arbitrary>::Strategy: Clone,
+  <T as Arbitrary>::Parameters: Clone,
   T: Arbitrary + Scalar + Clone + PartialOrd,
 {
   type Parameters = <(PointView<T, 2>, PointView<T, 2>) as Arbitrary>::Parameters;
@@ -217,8 +225,8 @@ where
 
 impl<T> Arbitrary for Rectangle<T>
 where
-  T::Strategy: Clone,
-  T::Parameters: Clone,
+  <T as Arbitrary>::Strategy: Clone,
+  <T as Arbitrary>::Parameters: Clone,
   T: Arbitrary + Scalar + Copy + Ord,
 {
   type Parameters = <(PointView<T, 2>, PointView<T, 2>) as Arbitrary>::Parameters;
@@ -230,12 +238,12 @@ where
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Arbitrary Rectangle
+// Arbitrary Triangle
 
 impl<T> Arbitrary for Triangle<T>
 where
-  T::Strategy: Clone,
-  T::Parameters: Clone,
+  <T as Arbitrary>::Strategy: Clone,
+  <T as Arbitrary>::Parameters: Clone,
   T: Arbitrary + Scalar + Copy + Ord,
 {
   type Parameters = <(PointView<T, 2>, PointView<T, 2>, PointView<T, 2>) as Arbitrary>::Parameters;
@@ -244,4 +252,42 @@ where
       .prop_map(|(p1, p2, p3)| Triangle::new(p1.into(), p2.into(), p3.into()))
   }
   type Strategy = Mapped<(PointView<T, 2>, PointView<T, 2>, PointView<T, 2>), Triangle<T>>;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Arbitrary Shape
+
+#[derive(proptest_derive::Arbitrary, Debug)]
+pub enum ShapeView<T, R>
+where
+  <T as Arbitrary>::Strategy: Clone,
+  <T as Arbitrary>::Parameters: Clone,
+  T: Arbitrary + Scalar + Copy + Ord,
+  <R as Arbitrary>::Strategy: Clone,
+  <R as Arbitrary>::Parameters: Clone,
+  R: Arbitrary + Scalar + Unsigned + Copy + Ord,
+{
+  Rectangle(Rectangle<T>),
+  Circle(Circle<T, R>),
+  Ellipse(Ellipse<T, R>),
+  Triangle(Triangle<T>),
+}
+
+impl<T, R> From<ShapeView<T, R>> for Shape<T, R>
+where
+  <T as Arbitrary>::Strategy: Clone,
+  <T as Arbitrary>::Parameters: Clone,
+  T: Arbitrary + Scalar + Copy + Ord,
+  <R as Arbitrary>::Strategy: Clone,
+  <R as Arbitrary>::Parameters: Clone,
+  R: Arbitrary + Scalar + Unsigned + Copy + Ord,
+{
+  fn from(val: ShapeView<T, R>) -> Self {
+    match val {
+      ShapeView::Rectangle(rectangle) => Shape::Rectangle(rectangle),
+      ShapeView::Circle(circle) => Shape::Circle(circle),
+      ShapeView::Ellipse(ellipse) => Shape::Ellipse(ellipse),
+      ShapeView::Triangle(triangle) => Shape::Triangle(triangle),
+    }
+  }
 }

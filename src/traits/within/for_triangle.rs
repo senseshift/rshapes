@@ -1,4 +1,5 @@
 use super::Within;
+use crate::traits::bbox::*;
 use crate::*;
 
 impl Within<&Point2<u8>> for Triangle<u8> {

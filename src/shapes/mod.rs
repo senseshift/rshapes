@@ -10,8 +10,6 @@ pub use rectangle::*;
 pub use shape_collection::*;
 pub use triangle::*;
 
-use crate::*;
-
 use derivative::Derivative;
 use nalgebra::Scalar;
 use num::Unsigned;
@@ -80,34 +78,25 @@ where
   }
 }
 
-impl Shape<u8, u8> {
-  pub fn center(&self) -> Point2<u8> {
-    match self {
-      Self::Ellipse(ellipse) => *ellipse.center(),
-      Self::Circle(circle) => *circle.center(),
-      Self::Rectangle(rectangle) => rectangle.center(),
-      Self::Triangle(triangle) => triangle.center(),
-      Self::Collection(collection) => collection.center(),
-    }
-  }
+#[cfg(test)]
+mod tests {
+  use test_strategy::proptest;
 
-  pub fn bbox(&self) -> Rectangle<u8> {
-    match self {
-      Self::Ellipse(ellipse) => ellipse.bbox(),
-      Self::Circle(circle) => circle.bbox(),
-      Self::Rectangle(rectangle) => *rectangle,
-      Self::Triangle(triangle) => triangle.bbox(),
-      Self::Collection(collection) => collection.bbox(),
-    }
-  }
+  use super::*;
+  use crate::testing::*;
+  use crate::traits::*;
 
-  pub fn points_inside(&self) -> Vec<Point2<u8>> {
-    match self {
-      Shape::Ellipse(ellipse) => ellipse.points_inside(),
-      Shape::Circle(circle) => circle.points_inside(),
-      Shape::Rectangle(rectangle) => rectangle.points_inside(),
-      Shape::Triangle(triangle) => triangle.points_inside(),
-      Shape::Collection(collection) => collection.points_inside(),
+  #[proptest]
+  fn shape_u8_points_inside_are_within_fuzz(shape_view: ShapeView<u8, u8>) {
+    let shape = Shape::from(shape_view);
+    let points = shape.points_inside();
+    for point in points {
+      assert!(
+        shape.within(&point),
+        "point {:?} is not within shape {:?}",
+        point,
+        shape
+      );
     }
   }
 }
