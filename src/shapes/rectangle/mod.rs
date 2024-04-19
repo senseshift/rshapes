@@ -146,6 +146,7 @@ impl Centroid<u8> for Rectangle<u8> {
 mod tests {
   use super::*;
 
+  use test_case::test_case;
   use test_strategy::proptest;
 
   #[proptest]
@@ -168,5 +169,15 @@ mod tests {
         rectangle
       );
     }
+  }
+
+  #[test_case(Rectangle::new(Point2::new(0, 0), Point2::new(10, 10)), Point2::new(5, 5); "normal")]
+  fn rectangle_centroid_u8(rectangle: Rectangle<u8>, expected_center: Point2<u8>) {
+    assert_eq!(rectangle.centroid(), expected_center);
+  }
+
+  #[proptest]
+  fn rectangle_centroid_u8_fuzz(rectangle: Rectangle<u8>) {
+    let _out = rectangle.centroid();
   }
 }

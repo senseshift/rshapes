@@ -73,6 +73,7 @@ impl BoundingBox<u8> for Triangle<u8> {
 mod tests {
   use super::*;
 
+  use test_case::test_case;
   use test_strategy::proptest;
 
   #[proptest]
@@ -83,5 +84,15 @@ mod tests {
   #[proptest]
   fn triangle_points_inside_u8_fuzz(triangle: Triangle<u8>) {
     let _points = triangle.points_inside();
+  }
+
+  #[test_case(Triangle::new([0, 0].into(), [10, 0].into(), [0, 10].into()), [3, 3].into(); "normal")]
+  fn test_triangle_centroid(triangle: Triangle<u8>, centroid: Point2<u8>) {
+    assert_eq!(triangle.centroid(), centroid);
+  }
+
+  #[proptest]
+  fn triangle_centroid_u8_fuzz(triangle: Triangle<u8>) {
+    let _centroid = triangle.centroid();
   }
 }

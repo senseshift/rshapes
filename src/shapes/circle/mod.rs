@@ -152,4 +152,9 @@ mod tests {
   fn circle_points_inside_u8_fuzz(circle: Circle<u8, u8>) {
     let _out = circle.points_inside();
   }
+
+  #[proptest]
+  fn circle_centroid_u8_fuzz(circle: Circle<u8, u8>) {
+    assert_eq!(circle.centroid(), circle.center);
+  }
 }

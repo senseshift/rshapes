@@ -128,4 +128,9 @@ mod tests {
   fn ellipse_points_inside_u8_fuzz(ellipse: Ellipse<u8, u8>) {
     let _out = ellipse.points_inside();
   }
+
+  #[proptest]
+  fn ellipse_centroid_u8_fuzz(ellipse: Ellipse<u8, u8>) {
+    assert_eq!(ellipse.centroid(), ellipse.center);
+  }
 }
