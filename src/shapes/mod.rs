@@ -10,9 +10,6 @@ pub use rectangle::*;
 pub use shape_collection::*;
 pub use triangle::*;
 
-use crate::*;
-
-use crate::traits::{BoundingBox, Centroid, PointsInside};
 use derivative::Derivative;
 use nalgebra::Scalar;
 use num::Unsigned;
@@ -78,41 +75,5 @@ where
 {
   fn from(collection: ShapeCollection<T, R>) -> Self {
     Self::Collection(collection)
-  }
-}
-
-impl PointsInside<u8> for Shape<u8, u8> {
-  fn points_inside(&self) -> Vec<Point2<u8>> {
-    match self {
-      Shape::Ellipse(ellipse) => ellipse.points_inside(),
-      Shape::Circle(circle) => circle.points_inside(),
-      Shape::Rectangle(rectangle) => rectangle.points_inside(),
-      Shape::Triangle(triangle) => triangle.points_inside(),
-      Shape::Collection(collection) => collection.points_inside(),
-    }
-  }
-}
-
-impl Centroid<u8> for Shape<u8, u8> {
-  fn centroid(&self) -> Point2<u8> {
-    match self {
-      Self::Ellipse(ellipse) => ellipse.centroid(),
-      Self::Circle(circle) => circle.centroid(),
-      Self::Rectangle(rectangle) => rectangle.centroid(),
-      Self::Triangle(triangle) => triangle.centroid(),
-      Self::Collection(collection) => collection.centroid(),
-    }
-  }
-}
-
-impl BoundingBox<u8> for Shape<u8, u8> {
-  fn bbox(&self) -> Rectangle<u8> {
-    match self {
-      Self::Ellipse(ellipse) => ellipse.bbox(),
-      Self::Circle(circle) => circle.bbox(),
-      Self::Rectangle(rectangle) => rectangle.bbox(),
-      Self::Triangle(triangle) => triangle.bbox(),
-      Self::Collection(collection) => collection.bbox(),
-    }
   }
 }

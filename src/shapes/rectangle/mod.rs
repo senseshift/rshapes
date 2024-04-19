@@ -1,7 +1,6 @@
 use derivative::Derivative;
 use num::Num;
 
-use crate::traits::*;
 use crate::*;
 
 #[cfg_attr(
@@ -81,82 +80,13 @@ where
   }
 }
 
-impl PointsInside<u8> for Rectangle<u8> {
-  /// Returns a vector of all points inside the rectangle.
-  ///
-  /// # Example
-  /// ```rust
-  /// use rshapes::{Point2, Rectangle, traits::PointsInside};
-  ///
-  /// let rectangle = Rectangle::new(Point2::new(0, 0), Point2::new(2, 2));
-  /// assert_eq!(rectangle.points_inside(), vec![
-  ///   Point2::new(0, 0),
-  ///   Point2::new(0, 1),
-  ///   Point2::new(0, 2),
-  ///   Point2::new(1, 0),
-  ///   Point2::new(1, 1),
-  ///   Point2::new(1, 2),
-  ///   Point2::new(2, 0),
-  ///   Point2::new(2, 1),
-  ///   Point2::new(2, 2),
-  /// ]);
-  /// ```
-  fn points_inside(&self) -> Vec<Point2<u8>> {
-    let mut points = Vec::with_capacity(self.width() as usize * self.height() as usize);
-
-    for x in self.min().x..self.max().x.saturating_add(1) {
-      for y in self.min().y..self.max().y.saturating_add(1) {
-        points.push(Point2::new(x, y));
-      }
-    }
-
-    points
-  }
-}
-
-impl<T> BoundingBox<T> for Rectangle<T>
-where
-  T: Scalar + Num,
-{
-  fn bbox(&self) -> Rectangle<T> {
-    self.clone()
-  }
-}
-
-impl Centroid<u8> for Rectangle<u8> {
-  /// Returns the center of the rectangle.
-  ///
-  /// # Example
-  /// ```rust
-  /// use rshapes::{Point2, Rectangle, traits::Centroid};
-  ///
-  /// let rectangle = Rectangle::new(Point2::new(0, 0), Point2::new(10, 10));
-  /// assert_eq!(rectangle.centroid(), Point2::new(5, 5));
-  ///
-  /// ```
-  fn centroid(&self) -> Point2<u8> {
-    let min = self.min().map(|x| x as u16);
-    let max = self.max().map(|x| x as u16);
-
-    Point2::new(((min.x + max.x) / 2) as u8, ((min.y + max.y) / 2) as u8)
-  }
-}
-
 #[cfg(test)]
 mod tests {
-  use super::*;
-
-  use test_case::test_case;
-  use test_strategy::proptest;
-
-  #[proptest]
-  fn rectangle_points_inside_u8_fuzz(rectangle: Rectangle<u8>) {
-    let _out = rectangle.points_inside();
-  }
 
   #[test]
   fn points_inside_are_within() {
-    use crate::{traits::Within, Point2};
+    use crate::traits::*;
+    use crate::*;
 
     let rectangle = Rectangle::new(Point2::new(0, 0), Point2::new(2, 2));
     let points = rectangle.points_inside();
@@ -169,15 +99,5 @@ mod tests {
         rectangle
       );
     }
-  }
-
-  #[test_case(Rectangle::new(Point2::new(0, 0), Point2::new(10, 10)), Point2::new(5, 5); "normal")]
-  fn rectangle_centroid_u8(rectangle: Rectangle<u8>, expected_center: Point2<u8>) {
-    assert_eq!(rectangle.centroid(), expected_center);
-  }
-
-  #[proptest]
-  fn rectangle_centroid_u8_fuzz(rectangle: Rectangle<u8>) {
-    let _out = rectangle.centroid();
   }
 }
