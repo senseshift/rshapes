@@ -29,43 +29,6 @@ jobs:
         with:
           command: check
 
-  coverage:
-    name: Test Coverage
-    runs-on: ubuntu-latest
-    container:
-      image: xd009642/tarpaulin
-      options: --security-opt seccomp=unconfined
-    strategy:
-      matrix:
-        flags:
-          - lib
-          - doc
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true
-      - uses: Swatinem/rust-cache@v2
-      # - run: cargo install tarpaulin
-      - uses: actions-rs/cargo@v1
-        with:
-          command: tarpaulin
-          args: --${{ matrix.flags }} --all-features --workspace --out xml
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v1
-        with:
-          name: code-coverage-report
-          path: cobertura.xml
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4.1.0
-        if: "!contains(github.event.head_commit.message, '[skip codecov]')"
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: cobertura.xml
-          flags: ${{ matrix.flags }}
-          fail_ci_if_error: true
-
   fmt:
     name: Rustfmt
     runs-on: ubuntu-latest
@@ -99,3 +62,96 @@ jobs:
         with:
           command: clippy
           args: -- -D warnings
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --all-features
+
+  coverage:
+    name: Test Coverage
+    runs-on: ubuntu-latest
+    needs: [ test ]
+    strategy:
+      matrix:
+        flags:
+          - lib
+          - doc
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@v2
+        name: Install cargo-tarpaulin using install-action
+        with:
+          tool: cargo-tarpaulin
+      - uses: actions-rs/cargo@v1
+        with:
+          command: tarpaulin
+          args: --${{ matrix.flags }} --all-features --workspace --out xml
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v1
+        with:
+          name: code-coverage-report
+          path: cobertura.xml
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.1.0
+        if: "!contains(github.event.head_commit.message, '[skip codecov]')"
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: cobertura.xml
+          flags: ${{ matrix.flags }}
+          fail_ci_if_error: true
+
+  cargo-mutants:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    # Often you'll want to only run this after the build is known to pass its basic tests,
+    # to avoid wasting time, and to allow using --baseline=skip.
+    needs: [ test ]
+    strategy:
+      fail-fast: false # Collect all mutants even if some are missed
+      matrix:
+        shard: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Relative diff
+        run: |
+          git branch -av
+          git diff origin/${{ github.base_ref }}.. | tee git.diff
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@v2
+        name: Install cargo-mutants using install-action
+        with:
+          tool: cargo-mutants
+      # Set an appropriate timeout for your tree here.
+      # The denominator of the shard count must be the number of shards.
+      - name: Mutants
+        run: |
+          cargo mutants --no-shuffle -vV --shard ${{ matrix.shard }}/8 --baseline=skip --timeout 300 --in-place --in-diff git.diff
+      - name: Archive mutants.out
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          path: mutants.out
+          name: mutants-shard${{matrix.shard}}.out
