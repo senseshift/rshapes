@@ -138,7 +138,7 @@ mod tests {
   }
 
   #[test_case(Triangle::new([0, 0].into(), [10, 0].into(), [0, 10].into()), [3, 3].into(); "normal")]
-  fn test_triangle_centroid(triangle: Triangle<u8>, centroid: Point2<u8>) {
+  fn triangle_centroid_u8(triangle: Triangle<u8>, centroid: Point2<u8>) {
     assert_eq!(triangle.centroid(), centroid);
   }
 

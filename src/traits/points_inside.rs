@@ -81,8 +81,6 @@ impl PointsInside<u8> for Rectangle<u8> {
 
 impl PointsInside<u8> for Triangle<u8> {
   fn points_inside(&self) -> Vec<Point2<u8>> {
-    use crate::traits::Within;
-
     self
       .bbox()
       .points_inside()
@@ -113,7 +111,7 @@ mod tests {
   use test_strategy::proptest;
 
   #[test]
-  fn test_points_inside() {
+  fn circle_points_u8_inside() {
     let circle = Circle::new(Point2::new(5, 5), 2);
     let points = circle.points_inside();
 
@@ -137,7 +135,7 @@ mod tests {
   }
 
   #[test]
-  pub fn test_points_inside_edge() {
+  fn circle_points_inside_u8_edge() {
     let circle = Circle::new(Point2::new(0, 0), 5);
     let points = circle.points_inside();
 

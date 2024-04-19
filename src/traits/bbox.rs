@@ -24,20 +24,6 @@ impl BoundingBox<u8> for Shape<u8, u8> {
   }
 }
 
-impl BoundingBox<u8> for Ellipse<u8, u8> {
-  fn bbox(&self) -> Rectangle<u8> {
-    let x = self.center.x as f64 - self.radius.0 as f64;
-    let y = self.center.y as f64 - self.radius.1 as f64;
-    let width = self.radius.0 as f64 * 2.0 + 1.;
-    let height = self.radius.1 as f64 * 2.0 + 1.;
-
-    Rectangle::new(
-      Point2::new(x, y).map(|c| c as u8),
-      Point2::new(x + width, y + height).map(|c| c as u8),
-    )
-  }
-}
-
 impl BoundingBox<u8> for Circle<u8, u8> {
   fn bbox(&self) -> Rectangle<u8> {
     let radius = self.radius as i16;
@@ -49,6 +35,20 @@ impl BoundingBox<u8> for Circle<u8, u8> {
     Rectangle::new(
       min.map(|x| x.clamp(0, u8::MAX as i16) as u8),
       max.map(|x| x.clamp(0, u8::MAX as i16) as u8),
+    )
+  }
+}
+
+impl BoundingBox<u8> for Ellipse<u8, u8> {
+  fn bbox(&self) -> Rectangle<u8> {
+    let x = self.center.x as f64 - self.radius.0 as f64;
+    let y = self.center.y as f64 - self.radius.1 as f64;
+    let width = self.radius.0 as f64 * 2.0;
+    let height = self.radius.1 as f64 * 2.0;
+
+    Rectangle::new(
+      Point2::new(x, y).map(|c| c as u8),
+      Point2::new(x + width, y + height).map(|c| c as u8),
     )
   }
 }
@@ -69,10 +69,7 @@ impl BoundingBox<u8> for Triangle<u8> {
     let max_x = self.0.x.max(self.1.x).max(self.2.x);
     let max_y = self.0.y.max(self.1.y).max(self.2.y);
 
-    Rectangle::new(
-      Point2::new(min_x, min_y),
-      Point2::new(max_x, max_y).map(|x| x.saturating_add(1)),
-    )
+    Rectangle::new(Point2::new(min_x, min_y), Point2::new(max_x, max_y))
   }
 }
 
@@ -94,19 +91,36 @@ impl BoundingBox<u8> for ShapeCollection<u8, u8> {
 
 #[cfg(test)]
 mod tests {
-
   use super::*;
 
   use test_case::test_case;
   use test_strategy::proptest;
 
-  #[test_case(Circle::new(Point2::new(12, 12 ), 10), Point2::new(2, 2  ), Point2::new(22, 22 ); "normal")]
-  #[test_case(Circle::new(Point2::new(0, 0  ), 10), Point2::new(0, 0  ), Point2::new(10, 10 ); "edge/top+start")]
+  #[test_case(Circle::new(Point2::new(12,  12 ), 10), Point2::new(2, 2  ), Point2::new(22, 22 ); "normal")]
+  #[test_case(Circle::new(Point2::new(0,   0  ), 10), Point2::new(0, 0  ), Point2::new(10, 10 ); "edge/top+start")]
   #[test_case(Circle::new(Point2::new(255, 0  ), 10), Point2::new(245, 0  ), Point2::new(255, 10 ); "edge/top+end")]
-  #[test_case(Circle::new(Point2::new(0, 255), 10), Point2::new(0, 245), Point2::new(10, 255); "edge/bottom+start")]
+  #[test_case(Circle::new(Point2::new(0,   255), 10), Point2::new(0, 245), Point2::new(10, 255); "edge/bottom+start")]
   #[test_case(Circle::new(Point2::new(255, 255), 10), Point2::new(245, 245), Point2::new(255, 255); "edge/bottom+end")]
-  fn test_circle_bbox(circle: Circle<u8, u8>, min: Point2<u8>, max: Point2<u8>) {
+  fn circle_bbox_u8(circle: Circle<u8, u8>, min: Point2<u8>, max: Point2<u8>) {
     let bbox = circle.bbox();
+
+    assert_eq!(bbox.min(), &min);
+    assert_eq!(bbox.max(), &max);
+  }
+
+  #[proptest]
+  fn circle_bbox_u8_fuzz(circle: Circle<u8, u8>) {
+    let _out = circle.bbox();
+  }
+
+  #[test_case(Ellipse::new(Point2::new(12, 12), (10, 10)), Point2::new(2, 2), Point2::new(22, 22); "normal")]
+  #[test_case(Ellipse::new(Point2::new(0, 0), (10, 10)), Point2::new(0, 0), Point2::new(10, 10); "edge/top+start")]
+  #[test_case(Ellipse::new(Point2::new(255, 0), (10, 10)), Point2::new(245, 0), Point2::new(255, 10); "edge/top+end")]
+  #[test_case(Ellipse::new(Point2::new(0, 255), (10, 10)), Point2::new(0, 245), Point2::new(10, 255); "edge/bottom+start")]
+  #[test_case(Ellipse::new(Point2::new(255, 255), (10, 10)), Point2::new(245, 245), Point2::new(255, 255); "edge/bottom+end")]
+
+  fn ellipse_bbox_u8(ellipse: Ellipse<u8, u8>, min: Point2<u8>, max: Point2<u8>) {
+    let bbox = ellipse.bbox();
 
     assert_eq!(bbox.min(), &min);
     assert_eq!(bbox.max(), &max);
@@ -117,9 +131,12 @@ mod tests {
     let _out = ellipse.bbox();
   }
 
-  #[proptest]
-  fn circle_bbox_u8_fuzz(circle: Circle<u8, u8>) {
-    let _out = circle.bbox();
+  #[test_case(Triangle::new([0, 0].into(), [10, 0].into(), [0, 10].into()), Point2::new(0, 0), Point2::new(10, 10); "normal")]
+  fn triangle_bbox_u8(triangle: Triangle<u8>, min: Point2<u8>, max: Point2<u8>) {
+    let bbox = triangle.bbox();
+
+    assert_eq!(bbox.min(), &min);
+    assert_eq!(bbox.max(), &max);
   }
 
   #[proptest]

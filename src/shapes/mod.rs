@@ -77,3 +77,26 @@ where
     Self::Collection(collection)
   }
 }
+
+#[cfg(test)]
+mod tests {
+  use test_strategy::proptest;
+
+  use super::*;
+  use crate::testing::*;
+  use crate::traits::*;
+
+  #[proptest]
+  fn shape_u8_points_inside_are_within_fuzz(shape_view: ShapeView<u8, u8>) {
+    let shape = Shape::from(shape_view);
+    let points = shape.points_inside();
+    for point in points {
+      assert!(
+        shape.within(&point),
+        "point {:?} is not within shape {:?}",
+        point,
+        shape
+      );
+    }
+  }
+}

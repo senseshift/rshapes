@@ -77,15 +77,4 @@ impl Ellipse<u8, u8> {
 }
 
 #[cfg(test)]
-mod tests {
-  use super::*;
-
-  use crate::traits::*;
-
-  use test_strategy::proptest;
-
-  #[proptest]
-  fn ellipse_points_inside_u8_fuzz(ellipse: Ellipse<u8, u8>) {
-    let _out = ellipse.points_inside();
-  }
-}
+mod tests {}

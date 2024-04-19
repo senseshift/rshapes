@@ -81,23 +81,4 @@ where
 }
 
 #[cfg(test)]
-mod tests {
-
-  #[test]
-  fn points_inside_are_within() {
-    use crate::traits::*;
-    use crate::*;
-
-    let rectangle = Rectangle::new(Point2::new(0, 0), Point2::new(2, 2));
-    let points = rectangle.points_inside();
-
-    for point in points {
-      assert!(
-        rectangle.within(&point),
-        "point {:?} is not within rectangle {:?}",
-        point,
-        rectangle
-      );
-    }
-  }
-}
+mod tests {}
