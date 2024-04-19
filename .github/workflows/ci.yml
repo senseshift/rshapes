@@ -29,9 +29,17 @@ jobs:
         with:
           command: check
 
-  test:
-    name: Test Suite
+  coverage:
+    name: Test Coverage
     runs-on: ubuntu-latest
+    container:
+      image: xd009642/tarpaulin
+      options: --security-opt seccomp=unconfined
+    strategy:
+      matrix:
+        flags:
+          - lib
+          - doc
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1
@@ -39,21 +47,24 @@ jobs:
           toolchain: nightly
           override: true
       - uses: Swatinem/rust-cache@v2
+      # - run: cargo install tarpaulin
       - uses: actions-rs/cargo@v1
         with:
-          command: test
-          args: --all-features --no-fail-fast
-        env:
-          CARGO_INCREMENTAL: '0'
-          RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
-          RUSTDOCFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
-      - uses: actions-rs/grcov@v0.1
+          command: tarpaulin
+          args: --${{ matrix.flags }} --all-features --workspace --out xml
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v1
+        with:
+          name: code-coverage-report
+          path: cobertura.xml
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4.0.1
+        uses: codecov/codecov-action@v4.1.0
         if: "!contains(github.event.head_commit.message, '[skip codecov]')"
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: senseshift/rshapes
+          files: cobertura.xml
+          flags: ${{ matrix.flags }}
+          fail_ci_if_error: true
 
   fmt:
     name: Rustfmt
