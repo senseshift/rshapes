@@ -6,6 +6,10 @@ use std::hash::{Hash, Hasher};
 
 use super::Shape;
 
+#[cfg_attr(
+  feature = "serde-serialize",
+  derive(serde::Serialize, serde::Deserialize)
+)]
 pub struct ShapeCollection<T, U>
 where
   T: Scalar,
