@@ -352,10 +352,11 @@ where
 
 #[cfg(test)]
 mod tests {
-  use super::*;
-  use crate::*;
-
   use crate::testing::PointView;
+  use crate::{
+    distance, distance_squared, traits::Distance, Circle, Ellipse, Line, Point2, Rectangle,
+    Triangle,
+  };
   use test_case::test_case;
   use test_strategy::proptest;
 

@@ -5,6 +5,7 @@ mod shapes;
 pub use shapes::*;
 
 pub mod traits;
+pub use traits::distance;
 pub use traits::distance_squared;
 
 use nalgebra::Scalar;
@@ -21,3 +22,6 @@ impl FloatMath for f64 {}
 
 #[cfg(test)]
 pub mod testing;
+
+#[cfg(feature = "proptest-support")]
+pub mod proptest;

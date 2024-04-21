@@ -1,5 +1,5 @@
 use crate::traits::{BoundingBox, Within};
-use crate::*;
+use crate::{Circle, Ellipse, Point2, Rectangle, Scalar, Shape, ShapeCollection, Triangle};
 use std::collections::HashSet;
 
 pub trait PointsInside<T: Scalar> {
@@ -108,8 +108,10 @@ impl PointsInside<u8> for ShapeCollection<u8, u8> {
 
 #[cfg(test)]
 mod tests {
-  use super::*;
-
+  use crate::{
+    assert_vec_eq, assert_vec_eq_unordered, traits::PointsInside, Circle, Ellipse, Point2,
+    Rectangle, Shape, ShapeCollection, Triangle,
+  };
   use test_strategy::proptest;
 
   #[test]

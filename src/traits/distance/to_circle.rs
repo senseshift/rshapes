@@ -28,9 +28,7 @@ impl Distance<Circle<u8, u8>> for Circle<u8, u8> {
 
 #[cfg(test)]
 mod tests {
-  use super::*;
-  use crate::*;
-
+  use crate::{traits::Distance, Circle};
   use test_strategy::proptest;
 
   #[proptest]

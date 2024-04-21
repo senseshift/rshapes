@@ -39,9 +39,8 @@ impl Within<Point2<u8>> for Ellipse<u8, u8> {
 
 #[cfg(test)]
 mod tests {
-  use super::*;
-
   use crate::testing::PointView;
+  use crate::{traits::Within, Ellipse, Point2};
   use test_case::test_case;
   use test_strategy::proptest;
 

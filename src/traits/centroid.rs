@@ -112,8 +112,9 @@ impl Centroid<u8> for ShapeCollection<u8, u8> {
 
 #[cfg(test)]
 mod tests {
-  use super::*;
-
+  use crate::{
+    traits::Centroid, Circle, Ellipse, Point2, Rectangle, Shape, ShapeCollection, Triangle,
+  };
   use test_case::test_case;
   use test_strategy::proptest;
 

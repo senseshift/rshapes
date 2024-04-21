@@ -27,9 +27,8 @@ where
 
 #[cfg(test)]
 mod tests {
-  use super::*;
-
   use crate::testing::*;
+  use crate::{traits::Within, Point2, Rectangle};
   use test_case::test_case;
   use test_strategy::proptest;
 
