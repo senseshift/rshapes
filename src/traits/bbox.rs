@@ -91,10 +91,12 @@ impl BoundingBox<u8> for ShapeCollection<u8, u8> {
 
 #[cfg(test)]
 mod tests {
-  use super::*;
-
   use test_case::test_case;
   use test_strategy::proptest;
+
+  use crate::{
+    traits::BoundingBox, Circle, Ellipse, Point2, Rectangle, Shape, ShapeCollection, Triangle,
+  };
 
   #[test_case(Circle::new(Point2::new(12,  12 ), 10), Point2::new(2, 2  ), Point2::new(22, 22 ); "normal")]
   #[test_case(Circle::new(Point2::new(0,   0  ), 10), Point2::new(0, 0  ), Point2::new(10, 10 ); "edge/top+start")]

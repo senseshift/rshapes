@@ -5,6 +5,10 @@ use num::Unsigned;
 use derivative::Derivative;
 use getset::Getters;
 
+#[cfg_attr(
+  feature = "serde-serialize",
+  derive(serde::Serialize, serde::Deserialize)
+)]
 #[derive(Getters, Derivative)]
 #[derivative(Debug, Clone, Copy, Hash, PartialEq, Eq)]
 pub struct Circle<T: Scalar, R: Scalar + Unsigned> {

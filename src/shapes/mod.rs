@@ -14,6 +14,10 @@ use derivative::Derivative;
 use nalgebra::Scalar;
 use num::Unsigned;
 
+#[cfg_attr(
+  feature = "serde-serialize",
+  derive(serde::Serialize, serde::Deserialize)
+)]
 #[derive(Derivative)]
 #[derivative(Debug, Clone, Hash, PartialEq, Eq)]
 pub enum Shape<T, U>

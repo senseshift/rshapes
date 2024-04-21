@@ -23,9 +23,9 @@ impl Within<Point2<u8>> for Circle<u8, u8> {
 
 #[cfg(test)]
 mod tests {
-  use super::*;
-
   use crate::testing::PointView;
+
+  use crate::{traits::Within, Circle, Point2};
   use test_case::test_case;
   use test_strategy::proptest;
 
