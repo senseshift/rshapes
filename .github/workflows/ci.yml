@@ -105,7 +105,7 @@ jobs:
           command: tarpaulin
           args: --${{ matrix.flags }} --all-features --workspace --out xml
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: code-coverage-report-${{ matrix.flags }}
           path: cobertura.xml
