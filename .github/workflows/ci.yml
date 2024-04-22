@@ -107,7 +107,7 @@ jobs:
       - name: Archive code coverage results
         uses: actions/upload-artifact@v1
         with:
-          name: code-coverage-report
+          name: code-coverage-report-${{ matrix.flags }}
           path: cobertura.xml
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.3.0
