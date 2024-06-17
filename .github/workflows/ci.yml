@@ -110,7 +110,7 @@ jobs:
           name: code-coverage-report-${{ matrix.flags }}
           path: cobertura.xml
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4.4.1
+        uses: codecov/codecov-action@v4.5.0
         if: "!contains(github.event.head_commit.message, '[skip codecov]')"
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
