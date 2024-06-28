@@ -13,7 +13,7 @@ serde-serialize = ["dep:serde", "nalgebra/serde-serialize"]
 proptest-support = [ "dep:proptest", "dep:proptest-derive", "nalgebra/proptest-support" ]
 
 [dependencies]
-nalgebra = { version = "^0.32.3" }
+nalgebra = { version = "^0.33.0" }
 num = "^0.4.1"
 ordered-float = "^4.2.0"
 
