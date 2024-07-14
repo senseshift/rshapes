@@ -94,4 +94,33 @@ where
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+  use test_case::test_case;
+
+  use crate::{Point2, Rectangle};
+
+  #[test_case(
+    Rectangle::new(Point2::new(0, 10), Point2::new(10, 0)),
+    Point2::new(0, 0),
+    Point2::new(10, 10)
+  )]
+  #[test_case(
+    Rectangle::new(Point2::new(10, 0), Point2::new(0, 10)),
+    Point2::new(0, 0),
+    Point2::new(10, 10)
+  )]
+  #[test_case(
+    Rectangle::new(Point2::new(0, 0), Point2::new(10, 10)),
+    Point2::new(0, 0),
+    Point2::new(10, 10)
+  )]
+  #[test_case(
+    Rectangle::new(Point2::new(10, 10), Point2::new(0, 0)),
+    Point2::new(0, 0),
+    Point2::new(10, 10)
+  )]
+  pub fn test_new_normalizes(rectangle: Rectangle<u8>, min: Point2<u8>, max: Point2<u8>) {
+    assert_eq!(rectangle.min(), &min);
+    assert_eq!(rectangle.max(), &max);
+  }
+}
