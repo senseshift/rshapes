@@ -31,9 +31,31 @@ where
 {
   pub fn new(a: Point2<T>, b: Point2<T>) -> Self {
     if a < b {
-      Self { start: a, end: b }
+      Self::new_unchecked(a, b)
     } else {
-      Self { start: b, end: a }
+      Self::new_unchecked(b, a)
     }
+  }
+}
+
+#[cfg(test)]
+mod test {
+  use test_case::test_case;
+
+  use crate::{Line, Point2};
+
+  #[test_case(
+    Line::new(Point2::new(0, 0), Point2::new(10, 10)),
+    Point2::new(0, 0),
+    Point2::new(10, 10)
+  )]
+  #[test_case(
+    Line::new(Point2::new(10, 10), Point2::new(0, 0)),
+    Point2::new(0, 0),
+    Point2::new(10, 10)
+  )]
+  fn test_new_normalizes(line: Line<u8>, start: Point2<u8>, end: Point2<u8>) {
+    assert_eq!(line.start, start);
+    assert_eq!(line.end, end);
   }
 }

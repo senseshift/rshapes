@@ -105,6 +105,12 @@ impl Distance<&Point2<u8>> for Circle<u8, u8> {
   /// assert_eq!(circle.distance(&point), 5.0);
   /// ```
   fn distance(&self, point: &Point2<u8>) -> Self::Result {
+    use crate::traits::Within;
+
+    if self.within(point) {
+      return 0.0;
+    }
+
     let distance_to_center = distance(&self.center, point);
 
     distance_to_center - self.radius as f64
@@ -126,6 +132,13 @@ impl Distance<&Point2<u8>> for Ellipse<u8, u8> {
 
     if self.within(point) {
       return 0.0;
+    }
+
+    // optimize if point is on the same axis as the center
+    if point.x == self.center.x {
+      return distance(&self.center, point) - *self.height() as f64;
+    } else if point.y == self.center.y {
+      return distance(&self.center, point) - *self.width() as f64;
     }
 
     let point_on_ellipse = self.point_intersection(point, 10);
@@ -354,9 +367,10 @@ where
 mod tests {
   use crate::testing::PointView;
   use crate::{
-    distance, distance_squared, traits::Distance, Circle, Ellipse, Line, Point2, Rectangle,
+    distance, distance_squared, traits::Distance, Circle, Ellipse, Line, Point2, Rectangle, Shape,
     Triangle,
   };
+  use float_cmp::assert_approx_eq;
   use test_case::test_case;
   use test_strategy::proptest;
 
@@ -395,9 +409,27 @@ mod tests {
     let _out = distance(&a.into(), &b.into());
   }
 
+  #[test_case(Circle::<u8, u8>::new([5, 5].into(), 10), Point2::new(5, 5), 0.0f64; "point in the circle")]
+  #[test_case(Circle::<u8, u8>::new([5, 5].into(), 10), Point2::new(5, 15), 0.0f64; "point on the edge")]
+  #[test_case(Circle::<u8, u8>::new([5, 5].into(), 10), Point2::new(20, 5), 5.0f64; "point on side center")]
+  #[test_case(Circle::<u8, u8>::new([5, 5].into(), 10), Point2::new(20, 20), 11.213f64; "point outside")]
+  fn circle_distance_u8(circle: Circle<u8, u8>, point: Point2<u8>, expected: f64) {
+    assert_approx_eq!(f64, circle.distance(point), expected, epsilon = 0.001);
+  }
+
   #[proptest]
   fn circle_distance_u8_fuzz(circle: Circle<u8, u8>, point: PointView<u8, 2>) {
     let _out = circle.distance(point.0);
+  }
+
+  #[test_case(Ellipse::<u8, u8>::new([5, 5].into(), (10, 5)), Point2::new(5, 5), 0.0f64; "point in the ellipse")]
+  #[test_case(Ellipse::<u8, u8>::new([5, 5].into(), (10, 5)), Point2::new(5, 10), 0.0f64; "point on the edge / center - x axis")]
+  #[test_case(Ellipse::<u8, u8>::new([5, 5].into(), (10, 5)), Point2::new(15, 5), 0.0f64; "point on the edge / center - y axis")]
+  #[test_case(Ellipse::<u8, u8>::new([5, 5].into(), (10, 5)), Point2::new(5, 15), 5.0f64; "point to the right of the ellipse center")]
+  #[test_case(Ellipse::<u8, u8>::new([5, 5].into(), (10, 5)), Point2::new(20, 5), 5.0f64; "point to the bottom of the ellipse center")]
+  #[test_case(Ellipse::<u8, u8>::new([5, 5].into(), (10, 5)), Point2::new(15, 10), 2.788f64; "point on the bbox corner ")]
+  fn ellipse_distance_u8(ellipse: Ellipse<u8, u8>, point: Point2<u8>, expected: f64) {
+    assert_approx_eq!(f64, ellipse.distance(point), expected, epsilon = 0.001);
   }
 
   #[proptest]
@@ -405,9 +437,25 @@ mod tests {
     let _out = ellipse.distance(&point.into());
   }
 
+  #[test_case(Line::new(Point2::new(5, 5), Point2::new(5, 10)), Point2::new(5, 7), 0.0f64; "point on the straight line")]
+  #[test_case(Line::new(Point2::new(5, 5), Point2::new(5, 10)), Point2::new(5, 4), 1.0f64; "point to the left of the straight line")]
+  #[test_case(Line::new(Point2::new(5, 5), Point2::new(5, 10)), Point2::new(5, 11), 1.0f64; "point to the right of the straight line")]
+  #[test_case(Line::new(Point2::new(5, 5), Point2::new(5, 10)), Point2::new(6, 7), 1.0f64; "point above the straight line")]
+  #[test_case(Line::new(Point2::new(5, 5), Point2::new(5, 10)), Point2::new(4, 7), 1.0f64; "point below the straight line")]
+  #[test_case(Line::new(Point2::new(5, 5), Point2::new(10, 10)), Point2::new(7, 7), 0.0f64; "point on the diagonal line")]
+  fn line_distance_u8(line: Line<u8>, point: Point2<u8>, expected: f64) {
+    assert_approx_eq!(f64, line.distance(point), expected, epsilon = 0.001);
+  }
+
   #[proptest]
   fn line_distance_u8_fuzz(line: Line<u8>, point: PointView<u8, 2>) {
     let _out = line.distance(&point.into());
+  }
+
+  #[test_case(Rectangle::new(Point2::new(0, 0), Point2::new(10, 10)), Point2::new(5, 5), 0.0f64; "point in the rectangle")]
+  #[test_case(Rectangle::new(Point2::new(0, 0), Point2::new(10, 10)), Point2::new(20, 10), 10.0f64; "point to the right of the rectangle")]
+  fn rectangle_distance_u8(rectangle: Rectangle<u8>, point: Point2<u8>, expected: f64) {
+    assert_approx_eq!(f64, rectangle.distance(point), expected, epsilon = 0.001);
   }
 
   #[proptest]
@@ -415,8 +463,40 @@ mod tests {
     let _out = rectangle.distance(&point.into());
   }
 
+  #[test_case(Triangle::new(Point2::new(0, 0), Point2::new(10, 0), Point2::new(0, 10)), Point2::new(5, 5), 0.0f64; "point in the triangle")]
+  #[test_case(Triangle::new(Point2::new(0, 0), Point2::new(10, 0), Point2::new(0, 10)), Point2::new(20, 10), 14.142f64; "point to the right of the triangle")]
+  fn triangle_distance_u8(triangle: Triangle<u8>, point: Point2<u8>, expected: f64) {
+    assert_approx_eq!(f64, triangle.distance(point), expected, epsilon = 0.001);
+  }
+
   #[proptest]
   fn triangle_distance_u8_fuzz(triangle: Triangle<u8>, point: PointView<u8, 2>) {
     let _out = triangle.distance(&point.into());
+  }
+
+  #[test]
+  fn shape_collection_distance_u8() {
+    let shapes = vec![
+      Shape::Circle(Circle::<u8, u8>::new([5, 5].into(), 10)),
+      Shape::Ellipse(Ellipse::<u8, u8>::new([5, 5].into(), (10, 5))),
+      Shape::Rectangle(Rectangle::new(Point2::new(0, 0), Point2::new(10, 10))),
+      Shape::Triangle(Triangle::new(
+        Point2::new(0, 0),
+        Point2::new(10, 0),
+        Point2::new(0, 10),
+      )),
+    ];
+
+    let collection = crate::ShapeCollection::new(shapes);
+
+    assert_approx_eq!(f64, collection.distance(&Point2::new(5, 5)), 0.0);
+    assert_approx_eq!(f64, collection.distance(&Point2::new(5, 15)), 0.0);
+    assert_approx_eq!(f64, collection.distance(&Point2::new(20, 5)), 5.0);
+    assert_approx_eq!(
+      f64,
+      collection.distance(&Point2::new(15, 10)),
+      1.180,
+      epsilon = 0.001
+    );
   }
 }

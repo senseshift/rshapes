@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-
+#[cfg_attr(test, mutants::skip)]
 use array_init::{array_init, try_array_init};
 use nalgebra::{Point, Scalar};
 use num::Unsigned;

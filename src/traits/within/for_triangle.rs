@@ -40,3 +40,23 @@ impl Within<Point2<u8>> for Triangle<u8> {
     self.within(&other)
   }
 }
+
+#[cfg(test)]
+mod tests {
+  use crate::testing::*;
+  use crate::{traits::Within, Point2, Triangle};
+  use test_case::test_case;
+  use test_strategy::proptest;
+
+  #[test_case(Triangle::new(Point2::from([0, 0]), Point2::from([10, 0]), Point2::from([0, 10])), Point2::from([0, 0]) => true; "top-left")]
+  #[test_case(Triangle::new(Point2::from([0, 0]), Point2::from([10, 0]), Point2::from([0, 10])), Point2::from([20, 20]) => false; "outside bbox")]
+  #[test_case(Triangle::new(Point2::from([0, 0]), Point2::from([10, 0]), Point2::from([0, 10])), Point2::from([9, 9]) => false; "inside bbox")]
+  fn triangle_within_u8(triangle: Triangle<u8>, point: Point2<u8>) -> bool {
+    triangle.within(point)
+  }
+
+  #[proptest]
+  fn triangle_within_u8_fuzz(triangle: Triangle<u8>, point: PointView2<u8>) {
+    let _out = triangle.within(&point.into());
+  }
+}

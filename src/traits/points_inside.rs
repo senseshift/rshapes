@@ -108,6 +108,8 @@ impl PointsInside<u8> for ShapeCollection<u8, u8> {
 
 #[cfg(test)]
 mod tests {
+  use crate::proptest::ShapeView;
+  use crate::traits::Within;
   use crate::{
     assert_vec_eq, assert_vec_eq_unordered, traits::PointsInside, Circle, Ellipse, Point2,
     Rectangle, Shape, ShapeCollection, Triangle,
@@ -291,5 +293,19 @@ mod tests {
     ];
 
     assert_vec_eq_unordered!(points, expected);
+  }
+
+  #[proptest]
+  fn shape_points_inside_u8_are_within_fuzz(shape_view: ShapeView<u8, u8>) {
+    let shape = Shape::from(shape_view);
+    let points = shape.points_inside();
+    for point in points {
+      assert!(
+        shape.within(&point),
+        "point {:?} is not within shape {:?}",
+        point,
+        shape
+      );
+    }
   }
 }

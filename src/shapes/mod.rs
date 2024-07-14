@@ -84,23 +84,39 @@ where
 
 #[cfg(test)]
 mod tests {
-  use test_strategy::proptest;
+  use crate::{Circle, Ellipse, Point2, Rectangle, Shape, ShapeCollection, Triangle};
 
-  use super::*;
-  use crate::testing::*;
-  use crate::traits::*;
+  #[test]
+  fn test_from() {
+    let rectangle = Rectangle::new(Point2::from([0, 0]), Point2::from([10, 10]));
+    assert!(matches!(
+      Shape::<u8, u8>::from(rectangle),
+      Shape::Rectangle(_)
+    ));
 
-  #[proptest]
-  fn shape_u8_points_inside_are_within_fuzz(shape_view: ShapeView<u8, u8>) {
-    let shape = Shape::from(shape_view);
-    let points = shape.points_inside();
-    for point in points {
-      assert!(
-        shape.within(&point),
-        "point {:?} is not within shape {:?}",
-        point,
-        shape
-      );
-    }
+    let circle = Circle::new(Point2::from([10, 10]), 5);
+    assert!(matches!(Shape::<u8, u8>::from(circle), Shape::Circle(_)));
+
+    let ellipse = Ellipse::new(Point2::from([10, 10]), (5, 5));
+    assert!(matches!(Shape::<u8, u8>::from(ellipse), Shape::Ellipse(_)));
+
+    let triangle = Triangle::new(
+      Point2::from([0, 0]),
+      Point2::from([10, 0]),
+      Point2::from([0, 10]),
+    );
+    assert!(matches!(
+      Shape::<u8, u8>::from(triangle),
+      Shape::Triangle(_)
+    ));
+
+    let collection = ShapeCollection::new(vec![
+      Shape::Rectangle(Rectangle::new(Point2::from([0, 0]), Point2::from([10, 10]))),
+      Shape::Circle(Circle::new(Point2::from([10, 10]), 5)),
+    ]);
+    assert!(matches!(
+      Shape::<u8, u8>::from(collection.clone()),
+      Shape::Collection(_)
+    ));
   }
 }

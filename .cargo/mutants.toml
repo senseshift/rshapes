@@ -1,0 +1,2 @@
+exclude_globs = ["src/proptest/*", "src/testing.rs"]
+exclude_re = ["impl Debug"]
