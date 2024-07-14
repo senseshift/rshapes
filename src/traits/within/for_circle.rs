@@ -40,7 +40,7 @@ mod tests {
   #[test_case(Circle::new(Point2::from([0, 0]), 10), Point2::from([11, 11]) => false; "outside top-right")]
   #[test_case(Circle::new(Point2::from([0, 0]), 10), Point2::from([255, 255]) => false; "outside max")]
   fn circle_within_u8(circle: Circle<u8, u8>, point: Point2<u8>) -> bool {
-    circle.within(&point)
+    circle.within(point)
   }
 
   #[proptest]

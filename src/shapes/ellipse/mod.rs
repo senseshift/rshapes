@@ -77,4 +77,30 @@ impl Ellipse<u8, u8> {
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+  use super::*;
+  use float_cmp::assert_approx_eq;
+  use nalgebra::Point2;
+  use test_case::test_case;
+
+  #[test_case(Ellipse::new(Point2::new(120, 120), (10, 5)), Point2::new(130, 120), Point2::new(130.0, 120.0); "point_at_0_deg")]
+  #[test_case(Ellipse::new(Point2::new(120, 120), (10, 5)), Point2::new(127, 127), Point2::new(125.91230017765763, 124.03251492896399); "point_at_45_deg")]
+  #[test_case(Ellipse::new(Point2::new(120, 120), (10, 5)), Point2::new(120, 125), Point2::new(120.0, 125.0); "point_at_90_deg")]
+  #[test_case(Ellipse::new(Point2::new(120, 120), (10, 5)), Point2::new(113, 127), Point2::new(114.08769982234237, 124.03251492896399); "point_at_135_deg")]
+  #[test_case(Ellipse::new(Point2::new(120, 120), (10, 5)), Point2::new(110, 120), Point2::new(110.0, 120.0); "point_at_180_deg")]
+  #[test_case(Ellipse::new(Point2::new(120, 120), (10, 5)), Point2::new(113, 113), Point2::new(114.08769982234237, 115.96748507103601); "point_at_225_deg")]
+  #[test_case(Ellipse::new(Point2::new(120, 120), (10, 5)), Point2::new(120, 115), Point2::new(120.0, 115.0); "point_at_270_deg")]
+  #[test_case(Ellipse::new(Point2::new(120, 120), (10, 5)), Point2::new(127, 113), Point2::new(125.91230017765763, 115.96748507103601); "point_at_315_deg")]
+  fn test_ellipse_point_intersection_u8(
+    ellipse: Ellipse<u8, u8>,
+    point: Point2<u8>,
+    expected: Point2<f64>,
+  ) {
+    let intersection = ellipse.point_intersection(&point, 1000);
+
+    println!("Intersection Point: {:?}", intersection);
+
+    assert_approx_eq!(f64, intersection.x, expected.x, ulps = 2);
+    assert_approx_eq!(f64, intersection.y, expected.y, ulps = 2);
+  }
+}

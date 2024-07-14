@@ -46,7 +46,7 @@ mod tests {
   #[test_case(Rectangle::new(Point2::from([5, 5]), Point2::from([10, 10])), Point2::from([6, 6]) => true; "non-centered inside")]
   #[test_case(Rectangle::new(Point2::from([5, 5]), Point2::from([10, 10])), Point2::from([11, 11]) => false; "non-centered outside")]
   fn rectangle_within_u8(rectangle: Rectangle<u8>, point: Point2<u8>) -> bool {
-    rectangle.within(&point)
+    rectangle.within(point)
   }
 
   #[proptest]

@@ -52,7 +52,7 @@ mod tests {
   #[test_case(Ellipse::new(Point2::from([5, 5]), (4, 3)), Point2::from([6, 6]) => true; "non-centered inside")]
   #[test_case(Ellipse::new(Point2::from([5, 5]), (4, 3)), Point2::from([10, 10]) => false; "non-centered outside")]
   fn ellipse_within_u8(ellipse: Ellipse<u8, u8>, point: Point2<u8>) -> bool {
-    ellipse.within(&point)
+    ellipse.within(point)
   }
 
   #[proptest]
